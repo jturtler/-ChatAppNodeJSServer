@@ -9,7 +9,7 @@ const MessagesCollection = require("./models/messages");
 const UsersCollection = require("./models/users");
 
 const mongoDB = "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/chatApp?retryWrites=true&w=majority";
-
+console.log("------------- mongo starts conneting ");
 mongoose.connect(mongoDB).then(() => {
 	console.log("------------- mongo connected ");
 }).catch(err => console.log(err))
