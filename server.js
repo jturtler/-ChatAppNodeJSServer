@@ -85,6 +85,7 @@ io.on('connection', socket => {
 	console.log("------ Connected to server : " + socket.id );
 	
 	socket.on('username', (username) => {
+console.log("================================ username  : " + username );
 		onlineUsers.push( username );
 		
 
@@ -177,8 +178,8 @@ console.log('a user ' +  user.username + ' logout');
 	// END - Upload files
 	// ---------------------
 	
-	setInterval(() => io.emit('mytime', new Date().toTimeString()), 1000);
-
+	setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
 });
 
-server.listen(() => console.log(`Server running on port default`));
+
+server.listen(3111, () => console.log(`Server running on port 3111`));
