@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
   socket.on('username', (username) => {
 
 		onlineUsers.push( username );
-
+    socket.emit('abcTest', { testdata: "testDATA1" });
 		UsersCollection.findOne({username: username}).then(( curUser ) => {
 			UsersCollection.find(
 				{ username: { $in: curUser.contacts } }
@@ -44,4 +44,4 @@ io.on('connection', (socket) => {
   // socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
-setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
+setInterval(() => io.emit('timeTEST', new Date().toTimeString()), 1000);
