@@ -3,6 +3,7 @@ const express = require('express');
 // var SocketIOFileUpload = require("socketio-file-upload")
 const fs = require('fs')
 
+const PORT = process.env.PORT || 3111;
 
 const mongoose = require("mongoose");
 const MessagesCollection = require("./models/messages");
@@ -185,4 +186,4 @@ console.log('a user ' +  user.username + ' logout');
 });
 
 
-server.listen( () => console.log(`Server running on port default`));
+server.listen( PORT, () => console.log(`Server running on port ${PORT}`));
