@@ -27,6 +27,7 @@ io.on('connection', (socket) => {
 
   socket.on('username', (username) => {
 
+console.log("------ username : " + username );
 		onlineUsers.push( username );
     socket.emit('abcTest', { testdata: "testDATA1" });
 		UsersCollection.findOne({username: username}).then(( curUser ) => {
@@ -35,6 +36,9 @@ io.on('connection', (socket) => {
 			)
 			.sort({ fullName: 1 })
 			.then(( contactList ) => {
+        
+console.log("------ contactList : " );
+console.log({ curUser: curUser, contacts: contactList, onlineList: onlineUsers });
 				socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
 			})
 		});
