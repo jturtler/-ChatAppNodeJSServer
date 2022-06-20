@@ -34,6 +34,13 @@ app.get('/deleteimage', (req, res) => {
 	})
 })
 
+app.get('/socket.io/', (req, res) => {
+	res.json(req.query.path);
+	// fs.unlinkSync(__dirname + "/uploads/" + req.query.path, () => {
+		
+	// })
+})
+
 // ====================
 // END - Create APP
 // =======================================================================================================
