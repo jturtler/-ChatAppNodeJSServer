@@ -30,18 +30,20 @@ io.on('connection', (socket) => {
 console.log("------ username : " + username );
 		onlineUsers.push( username );
     socket.emit('abcTest', { testdata: "testDATA1" });
-		UsersCollection.findOne({username: username}).then(( curUser ) => {
-			UsersCollection.find(
-				{ username: { $in: curUser.contacts } }
-			)
-			.sort({ fullName: 1 })
-			.then(( contactList ) => {
+
+// 		UsersCollection.findOne({username: username}).then(( curUser ) => {
+// 			UsersCollection.find(
+// 				{ username: { $in: curUser.contacts } }
+// 			)
+// 			.sort({ fullName: 1 })
+// 			.then(( contactList ) => {
         
-console.log("------ contactList : " );
-console.log({ curUser: curUser, contacts: contactList, onlineList: onlineUsers });
-				socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
-			})
-		});
+// console.log("------ contactList : " );
+// console.log({ curUser: curUser, contacts: contactList, onlineList: onlineUsers });
+// 				socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
+// 			})
+// 		});
+
 
 	});
 
