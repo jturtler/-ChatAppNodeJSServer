@@ -80,104 +80,110 @@ const io = require("socket.io")(server, {
 // Create connection
 // ====================
 
-io.on('connection', socket => {
+// io.on('connection', socket => {
 
-	console.log("------ Connected to server : " + socket.id );
+// 	console.log("------ Connected to server : " + socket.id );
 	
-	socket.on('username', (username) => {
-console.log("================================ username  : " + username );
-		onlineUsers.push( username );
+// 	socket.on('username', (username) => {
+// console.log("================================ username  : " + username );
+// 		onlineUsers.push( username );
+// 		
 
-		UsersCollection.findOne({username: username}).then(( curUser ) => {
-			UsersCollection.find(
-				{ username: { $in: curUser.contacts } }
-			)
-			.sort({ fullName: 1 })
-			.then(( contactList ) => {
-				socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
-			})
-		});
+// 		UsersCollection.findOne({username: username}).then(( curUser ) => {
+// 			UsersCollection.find(
+// 				{ username: { $in: curUser.contacts } }
+// 			)
+// 			.sort({ fullName: 1 })
+// 			.then(( contactList ) => {
+// 				socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
+// 			})
+// 		});
 
-	});
+// 	});
 
-	socket.on('login', function( user ){
+// 	socket.on('login', function( user ){
 		
-		onlineUsers.push( user.username );
-console.log('a user ' +  user.username + ' logged');
-		socket.emit('userStatusUpdate', {username: user.username, status: "online"} );
-		// saving userId to object with socket ID
-		// users[socket.id] = data.userId;
-	});
+// 		onlineUsers.push( user.username );
+// console.log('a user ' +  user.username + ' logged');
+// 		socket.emit('userStatusUpdate', {username: user.username, status: "online"} );
+// 		// saving userId to object with socket ID
+// 		// users[socket.id] = data.userId;
+// 	});
 	
-	socket.on('logout', function( user ){
+// 	socket.on('logout', function( user ){
 		
-		onlineUsers.splice( onlineUsers.indexOf( user.username), 1 );
-console.log('a user ' +  user.username + ' logout');
-		socket.emit('userStatusUpdate', {username: user.username, status: "offline"} );
+// 		onlineUsers.splice( onlineUsers.indexOf( user.username), 1 );
+// console.log('a user ' +  user.username + ' logout');
+// 		socket.emit('userStatusUpdate', {username: user.username, status: "offline"} );
 
-		// saving userId to object with socket ID
-		// users[socket.id] = data.userId;
-	});
+// 		// saving userId to object with socket ID
+// 		// users[socket.id] = data.userId;
+// 	});
 
-	socket.on('loadMessageList', ( users ) => {
-		MessagesCollection.find().or([
-			{ sender: users.username1, receiver: users.username2 },
-			{ sender: users.username2, receiver: users.username1 }
-		])
-		.sort({ datetime: 1 })
-		.then(( result ) => {
-			socket.emit('messageList', { messages: result, users: users } );
-		})
-	});
+// 	socket.on('loadMessageList', ( users ) => {
+// 		MessagesCollection.find().or([
+// 			{ sender: users.username1, receiver: users.username2 },
+// 			{ sender: users.username2, receiver: users.username1 }
+// 		])
+// 		.sort({ datetime: 1 })
+// 		.then(( result ) => {
+// 			socket.emit('messageList', { messages: result, users: users } );
+// 		})
+// 	});
 	
-	socket.on('getMsg', (data) => {
-		const message = new MessagesCollection( data );
-		// Save message to mongodb
-		message.save().then(() => {
-			// After saving message to server
-			socket.broadcast.emit('sendMsg', data );
-		})
-	});
+// 	socket.on('getMsg', (data) => {
+// 		const message = new MessagesCollection( data );
+// 		// Save message to mongodb
+// 		message.save().then(() => {
+// 			// After saving message to server
+// 			socket.broadcast.emit('sendMsg', data );
+// 		})
+// 	});
 
-	socket.on('disconnect',()=> {
-		for( let i=0; i <onlineUsers.length; i++ ) {
-			if( onlineUsers[i].id === socket.id ){
-				onlineUsers.splice(i,1); 
-			}
-		}
+// 	socket.on('disconnect',()=> {
+// 		for( let i=0; i <onlineUsers.length; i++ ) {
+// 			if( onlineUsers[i].id === socket.id ){
+// 				onlineUsers.splice(i,1); 
+// 			}
+// 		}
 
-		io.emit('exit', onlineUsers ); 
-	});
+// 		io.emit('exit', onlineUsers ); 
+// 	});
 
-	// socket.on('reconnect', function() {
-	// 	console.log('reconnect fired!');
-	// });
+// 	// socket.on('reconnect', function() {
+// 	// 	console.log('reconnect fired!');
+// 	// });
 
 	
-	// ------------------------------------------------------------------------------
-	// Upload files
-	// ---------------------
+// 	// ------------------------------------------------------------------------------
+// 	// Upload files
+// 	// ---------------------
 
-	// // Make an instance of SocketIOFileUpload and listen on this socket:
-	// var uploader = new SocketIOFileUpload();
-	// uploader.dir = "uploads";
-	// uploader.listen(socket);
+// 	// // Make an instance of SocketIOFileUpload and listen on this socket:
+// 	// var uploader = new SocketIOFileUpload();
+// 	// uploader.dir = "uploads";
+// 	// uploader.listen(socket);
 
-	// // Do something when a file is saved:
-	// uploader.on("saved", function (event) {
-	// 	event.file.clientDetail.name = event.file.name; 
-	// });
+// 	// // Do something when a file is saved:
+// 	// uploader.on("saved", function (event) {
+// 	// 	event.file.clientDetail.name = event.file.name; 
+// 	// });
 
-	// // Error handler:
-	// uploader.on("error", function (event) {
-	// 	console.log("Error from uploader", event);
-	// });
+// 	// // Error handler:
+// 	// uploader.on("error", function (event) {
+// 	// 	console.log("Error from uploader", event);
+// 	// });
 
-	// ------------------------------------------------------------------------------
-	// END - Upload files
-	// ---------------------
+// 	// ------------------------------------------------------------------------------
+// 	// END - Upload files
+// 	// ---------------------
 	
-});
+// });
+
+socket.onconnect = function(msg) {
+	console.log('=============== In Connect with msg: '+msg);
+	socket.emit('news', { hello: 'world' });
+  };
 
 
 server.listen(3111, () => console.log(`Server running on port 3111`));
