@@ -22,10 +22,26 @@ const io = require('socket.io')(server,{
 });
 
 io.on('connection', (socket) => {
-  socket.emit('connect success', {connectstatus: "success"} );
 
-  console.log('Client connected');
-  socket.on('disconnect', () => console.log('Client disconnected'));
+  console.log("------ Connected to server : " + socket.id );
+
+  socket.on('username', (username) => {
+
+		onlineUsers.push( username );
+
+		UsersCollection.findOne({username: username}).then(( curUser ) => {
+			UsersCollection.find(
+				{ username: { $in: curUser.contacts } }
+			)
+			.sort({ fullName: 1 })
+			.then(( contactList ) => {
+				socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
+			})
+		});
+
+	});
+
+  // socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
 setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
