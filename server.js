@@ -53,7 +53,7 @@ const app = express();
 // Create server
 // ====================
 
-const server = require('http').Server(app);
+const server = require('https').Server(app);
 // const clientURL = "http://localhost:8080";
 const clientURL = "https://client-dev.psi-connect.org";
 
