@@ -85,7 +85,6 @@ io.on('connection', socket => {
 	console.log("------ Connected to server : " + socket.id );
 	
 	socket.on('username', (username) => {
-console.log("================================ username  : " + username );
 		onlineUsers.push( username );
 		
 
@@ -182,4 +181,4 @@ console.log('a user ' +  user.username + ' logout');
 
 });
 
-server.listen(3111, () => console.log(`Server running on port 3111`));
+server.listen(() => console.log(`Server running on port default`));
