@@ -65,7 +65,8 @@ const io = require("socket.io")(server, {
 		origin: clientURL,
 		methods: ["GET", "POST"],
 		credentials: true,
-		origin: "*"
+		origin: "*",
+		allowedHeaders:["Access-Control-Allow-Origin"]
 	}
 });
 
