@@ -9,7 +9,7 @@ const MessagesCollection = require("./models/messages");
 const UsersCollection = require("./models/users");
 
 const mongoDB = "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/chatApp?retryWrites=true&w=majority";
-
+console.log("------------- mongo starts conneting ");
 mongoose.connect(mongoDB).then(() => {
 	console.log("------------- mongo connected ");
 }).catch(err => console.log(err))
@@ -64,7 +64,9 @@ const io = require("socket.io")(server, {
 	cors: {
 		origin: clientURL,
 		methods: ["GET", "POST"],
-		credentials: false
+		credentials: true,
+		origin: "*",
+		allowedHeaders:["Access-Control-Allow-Origin"]
 	}
 });
 
@@ -83,8 +85,9 @@ io.on('connection', socket => {
 	console.log("------ Connected to server : " + socket.id );
 	
 	socket.on('username', (username) => {
-
+console.log("================================ username  : " + username );
 		onlineUsers.push( username );
+		
 
 		UsersCollection.findOne({username: username}).then(( curUser ) => {
 			UsersCollection.find(
@@ -175,6 +178,7 @@ console.log('a user ' +  user.username + ' logout');
 	// END - Upload files
 	// ---------------------
 	
+	setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
 });
 
 
