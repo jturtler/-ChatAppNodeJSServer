@@ -22,25 +22,27 @@ const onlineUsers = [];
 // ====================
 
 const app = express();
-app.use(SocketIOFileUpload.router);
-app.use(express.static(__dirname + '/uploads'))
-app.get('/', (req, res) => {
-	res.sendFile(__dirname + "/uploads/" + req.query.path);
-})
-app.get('/deleteimage', (req, res) => {
-	res.json(req.query.path);
-	fs.unlinkSync(__dirname + "/uploads/" + req.query.path, () => {
-		
-	})
-})
+// app.use((req, res) => res.sendFile(INDEX, { root: __dirname }))
 
-app.get('/socket.io/', (req, res) => {
-	console.log("/socket.io/");
-	res.json(req.query.path);
-	// fs.unlinkSync(__dirname + "/uploads/" + req.query.path, () => {
+// app.use(SocketIOFileUpload.router);
+// app.use(express.static(__dirname + '/uploads'))
+// app.get('/', (req, res) => {
+// 	res.sendFile(__dirname + "/uploads/" + req.query.path);
+// })
+// app.get('/deleteimage', (req, res) => {
+// 	res.json(req.query.path);
+// 	fs.unlinkSync(__dirname + "/uploads/" + req.query.path, () => {
 		
-	// })
-})
+// 	})
+// })
+
+// app.get('/socket.io/', (req, res) => {
+// 	console.log("/socket.io/");
+// 	res.json(req.query.path);
+// 	// fs.unlinkSync(__dirname + "/uploads/" + req.query.path, () => {
+		
+// 	// })
+// })
 
 // ====================
 // END - Create APP
@@ -154,20 +156,20 @@ console.log('a user ' +  user.username + ' logout');
 	// Upload files
 	// ---------------------
 
-	// Make an instance of SocketIOFileUpload and listen on this socket:
-	var uploader = new SocketIOFileUpload();
-	uploader.dir = "uploads";
-	uploader.listen(socket);
+	// // Make an instance of SocketIOFileUpload and listen on this socket:
+	// var uploader = new SocketIOFileUpload();
+	// uploader.dir = "uploads";
+	// uploader.listen(socket);
 
-	// Do something when a file is saved:
-	uploader.on("saved", function (event) {
-		event.file.clientDetail.name = event.file.name; 
-	});
+	// // Do something when a file is saved:
+	// uploader.on("saved", function (event) {
+	// 	event.file.clientDetail.name = event.file.name; 
+	// });
 
-	// Error handler:
-	uploader.on("error", function (event) {
-		console.log("Error from uploader", event);
-	});
+	// // Error handler:
+	// uploader.on("error", function (event) {
+	// 	console.log("Error from uploader", event);
+	// });
 
 	// ------------------------------------------------------------------------------
 	// END - Upload files
