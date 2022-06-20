@@ -24,7 +24,6 @@ const onlineUsers = [];
 const app = express();
 // app.use((req, res) => res.sendFile(INDEX, { root: __dirname }))
 
-<<<<<<< HEAD
 // app.use(SocketIOFileUpload.router);
 // app.use(express.static(__dirname + '/uploads'))
 // app.get('/', (req, res) => {
@@ -33,11 +32,6 @@ const app = express();
 // app.get('/deleteimage', (req, res) => {
 // 	res.json(req.query.path);
 // 	fs.unlinkSync(__dirname + "/uploads/" + req.query.path, () => {
-=======
-app.get('/socket.io/', (req, res) => {
-	res.json(req.query.path);
-	// fs.unlinkSync(__dirname + "/uploads/" + req.query.path, () => {
->>>>>>> parent of 1f8f6a4 (Update server.js)
 		
 // 	})
 // })
@@ -70,7 +64,7 @@ const io = require("socket.io")(server, {
 	cors: {
 		origin: clientURL,
 		methods: ["GET", "POST"],
-		credentials: true
+		credentials: false
 	}
 });
 
