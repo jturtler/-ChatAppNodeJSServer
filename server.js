@@ -85,7 +85,7 @@ io.on('connection', socket => {
 	console.log("------ Connected to server : " + socket.id );
 	
 	socket.on('username', (username) => {
-
+console.log("================================ username  : " + username );
 		onlineUsers.push( username );
 
 		UsersCollection.findOne({username: username}).then(( curUser ) => {
