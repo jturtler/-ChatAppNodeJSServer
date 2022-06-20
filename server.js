@@ -186,4 +186,6 @@ socket.onconnect = function(msg) {
   };
 
 
+  setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
+  
 server.listen(3111, () => console.log(`Server running on port 3111`));
