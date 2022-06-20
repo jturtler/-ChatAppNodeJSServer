@@ -2,7 +2,6 @@
 const express = require('express');
 // var SocketIOFileUpload = require("socketio-file-upload")
 const fs = require('fs')
-const { Server } = require('ws');
 
 
 const mongoose = require("mongoose");
@@ -57,6 +56,7 @@ const app = express();
 const server = require('https').Server(app);
 // const clientURL = "http://localhost:8080";
 const clientURL = "https://client-dev.psi-connect.org";
+
 
 // =======================================================================================================
 // INIT Socket IO

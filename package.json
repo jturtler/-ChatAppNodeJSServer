@@ -1,7 +1,10 @@
 {
   "name": "chatapp",
+  "description": "Realtime chat app",
   "version": "1.0.0",
-  "description": "Realtime chat app with rooms",
+  "engines": {
+    "node": "12.11.1"
+  },
   "main": "server.js",
   "scripts": {
     "start": "node server",
