@@ -35,6 +35,7 @@ app.get('/deleteimage', (req, res) => {
 })
 
 app.get('/socket.io/', (req, res) => {
+	console.log("/socket.io/");
 	res.json(req.query.path);
 	// fs.unlinkSync(__dirname + "/uploads/" + req.query.path, () => {
 		
@@ -61,7 +62,7 @@ const io = require("socket.io")(server, {
 	cors: {
 		origin: clientURL,
 		methods: ["GET", "POST"],
-		credentials: true
+		credentials: false
 	}
 });
 
