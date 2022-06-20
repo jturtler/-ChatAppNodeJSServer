@@ -22,6 +22,12 @@ const onlineUsers = [];
 // ====================
 
 const app = express();
+
+app.get('/', function (req, res) {
+    res.send('<html><body><h1>Hello World</h1></body></html>');
+});
+
+
 // app.use((req, res) => res.sendFile(INDEX, { root: __dirname }))
 
 // app.use(SocketIOFileUpload.router);
