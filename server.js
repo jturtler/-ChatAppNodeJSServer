@@ -48,43 +48,96 @@ const io = require('socket.io')(server,{
 
 io.on('connection', (socket) => {
 
-  console.log("====================================================== Connected to server : " + socket.id );
+  	console.log("====================================================== Connected to server : " + socket.id );
 
-  socket.on('username', (username) => {
+	
+	// -----------------------------------------------------------------------------------------------------
+	// Username event
 
-console.log("====================================================== username : " + username );
-	onlineUsers.push( username );
+  	socket.on('username', (username) => {
 
-	UsersCollection.findOne({username: username}).then(( curUser ) => {
-		UsersCollection.find(
-			{ username: { $in: curUser.contacts } }
-		)
-		.sort({ fullName: 1 })
-		.then(( contactList ) => {
-			
-console.log("====================================================== contactList : " );
+		console.log("====================================================== username : " + username );
+		onlineUsers.push( username );
+
+		UsersCollection.findOne({username: username}).then(( curUser ) => {
+			UsersCollection.find(
+				{ username: { $in: curUser.contacts } }
+			)
+			.sort({ fullName: 1 })
+			.then(( contactList ) => {
+				socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
+			})
+		});
 
 
-console.log({ curUser: curUser, contacts: contactList, onlineList: onlineUsers } );
+	});
 
-			socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
+	
+	// -----------------------------------------------------------------------------------------------------
+	// 'login' event
+
+	socket.on('login', function( user ){
+		
+		onlineUsers.push( user.username );
+		socket.emit('userStatusUpdate', {username: user.username, status: "online"} );
+		console.log('====================================================== User ' +  user.username + ' logged');
+		// saving userId to object with socket ID
+		// users[socket.id] = data.userId;
+	});
+	
+	
+	// -----------------------------------------------------------------------------------------------------
+	// 'logout' event
+
+	socket.on('logout', function( user ){
+		
+		onlineUsers.splice( onlineUsers.indexOf( user.username), 1 );
+		socket.emit('userStatusUpdate', {username: user.username, status: "offline"} );
+		console.log('====================================================== User ' +  user.username + ' logout');
+	});
+
+
+	
+	// -----------------------------------------------------------------------------------------------------
+	// 'loadMessageList' event - load the list of messages of user sender and user received
+
+	socket.on('loadMessageList', ( users ) => {
+		MessagesCollection.find().or([
+			{ sender: users.username1, receiver: users.username2 },
+			{ sender: users.username2, receiver: users.username1 }
+		])
+		.sort({ datetime: 1 })
+		.then(( result ) => {
+			socket.emit('messageList', { messages: result, users: users } );
+		})
+	});
+	
+	
+	// -----------------------------------------------------------------------------------------------------
+	// 'getMsg' event - Receive a message with send from client
+
+	socket.on('getMsg', (data) => {
+		const message = new MessagesCollection( data );
+		// Save message to mongodb
+		message.save().then(() => {
+			// After saving message to server
+			socket.broadcast.emit('sendMsg', data );
 		})
 	});
 
-// 		UsersCollection.findOne({username: username}).then(( curUser ) => {
-// 			UsersCollection.find(
-// 				{ username: { $in: curUser.contacts } }
-// 			)
-// 			.sort({ fullName: 1 })
-// 			.then(( contactList ) => {
-        
-// console.log("------ contactList : " );
-// console.log({ curUser: curUser, contacts: contactList, onlineList: onlineUsers });
-// 				socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
-// 			})
-// 		});
+	
+	
+	// -----------------------------------------------------------------------------------------------------
+	// 'disconnect' event - socket is disconnected
 
+	socket.on('disconnect',()=> {
+		for( let i=0; i <onlineUsers.length; i++ ) {
+			if( onlineUsers[i].id === socket.id ){
+				onlineUsers.splice(i,1); 
+			}
+		}
 
+		io.emit('exit', onlineUsers ); 
 	});
 
   // socket.on('disconnect', () => console.log('Client disconnected'));
