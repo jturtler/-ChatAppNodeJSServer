@@ -121,7 +121,8 @@ io.on('connection', (socket) => {
 		// Save message to mongodb
 		message.save().then(() => {
 			// After saving message to server
-			socket.broadcast.emit('sendMsg', data );
+			// socket.broadcast.emit('sendMsg', data );
+			socket.emit('sendMsg', data );
 		})
 	});
 
