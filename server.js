@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
   socket.on('username', (username) => {
 
 console.log("------ username : " + username );
-		onlineUsers.push( username );
+		// onlineUsers.push( username );
     socket.emit('abcTest', { testdata: "testDATA1" });
 
 // 		UsersCollection.findOne({username: username}).then(( curUser ) => {
