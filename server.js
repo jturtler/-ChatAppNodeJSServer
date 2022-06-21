@@ -140,7 +140,6 @@ io.on('connection', (socket) => {
 		io.emit('exit', onlineUsers ); 
 	});
 
-  // socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
-setInterval(() => io.emit('timeTEST', new Date().toTimeString()), 1000);
+// setInterval(() => io.emit('timeTEST', new Date().toTimeString()), 1000);
