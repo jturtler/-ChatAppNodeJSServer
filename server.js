@@ -59,21 +59,23 @@ io.on('connection', (socket) => {
 		console.log("====================================================== username : " + username );
 		onlineUsers.push( username );
 
-		if( list.length > 0 )
-		{
-			const curUser = list[0]
-			UsersCollection.find(
-				{ username: { $in: curUser.contacts } }
-			)
-			.sort({ fullName: 1 })
-			.then(( contactList ) => {
-				socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
-			})
-		}
-		else
-		{
-			socket.emit('wrongUserName', { msg: `Cannot find the username ${username}`});
-		}
+		UsersCollection.find({username: username}).then(( list ) => {
+			if( list.length > 0 )
+			{
+				const curUser = list[0]
+				UsersCollection.find(
+					{ username: { $in: curUser.contacts } }
+				)
+				.sort({ fullName: 1 })
+				.then(( contactList ) => {
+					socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
+				})
+			}
+			else
+			{
+				socket.emit('wrongUserName', { msg: `Cannot find the username ${username}`});
+			}
+		});
 
 
 	});
