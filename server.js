@@ -53,13 +53,23 @@ io.on('connection', (socket) => {
   socket.on('username', (username) => {
 
 console.log("====================================================== username : " + username );
-onlineUsers.push( username );
+	onlineUsers.push( username );
 
-		// onlineUsers.push( username );
-    socket.emit('abcTest', { testdata: "testDATA1" });
+	UsersCollection.findOne({username: username}).then(( curUser ) => {
+		UsersCollection.find(
+			{ username: { $in: curUser.contacts } }
+		)
+		.sort({ fullName: 1 })
+		.then(( contactList ) => {
+			
+console.log("====================================================== contactList : " );
 
-    console.log( "======================================================" );
-    console.log(onlineUsers );
+
+console.log({ curUser: curUser, contacts: contactList, onlineList: onlineUsers } );
+
+			socket.emit('contactList', { curUser: curUser, contacts: contactList, onlineList: onlineUsers });
+		})
+	});
 
 // 		UsersCollection.findOne({username: username}).then(( curUser ) => {
 // 			UsersCollection.find(
