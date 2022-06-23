@@ -66,7 +66,6 @@ const server = express()
 		.sort({ datetime: 1 })
 		.then(( result ) => {
 			res.send( result );
-			// socket.emit('messageList', { messages: result, users: users } );
 		})
 	}
 	
@@ -81,10 +80,9 @@ console.log("====================== POST DATA : ");
 	const message = new MessagesCollection( data );
 	// Save message to mongodb
 	message.save().then(() => {
-		// After saving message to server
-		// socket.broadcast.emit('sendMsg', data );
-
+		
 		const to = data.receiver;
+		console.log( socketList );
 		if(socketList.hasOwnProperty(to)){
 			socketList[to].emit( 'sendMsg', data );
 		}
