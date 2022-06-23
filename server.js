@@ -26,7 +26,7 @@ const UsersCollection = require("./models/users");
 const mongoDB = "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/chatApp?retryWrites=true&w=majority";
 
 mongoose.connect(mongoDB).then(() => {
-	console.log("------------- mongo connected ");
+	console.log("====================================================== mongo connected ");
 }).catch(err => console.log(err))
 
 
@@ -66,10 +66,9 @@ const server = express()
 			res.send( result );
 		})
 	}
-	
 
-// 	// res.send( res.json() );
-// })
+	// res.send( res.json() );
+})
 // .post('/data', function(req, res){
 
 // console.log("====================== POST DATA : ");
