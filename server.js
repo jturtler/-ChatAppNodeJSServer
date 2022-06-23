@@ -177,7 +177,10 @@ io.on('connection', (socket) => {
   	socket.on('username', (username) => {
 
 		console.log("====================================================== username : " + username );
+		
 		socketList[username] = socket;
+		console.log("====================================================== socketList : " );
+		console.log(socketList );
 		onlineUsers.push( username );
 
 		UsersCollection.find({username: username}).then(( list ) => {
@@ -252,8 +255,7 @@ io.on('connection', (socket) => {
 			// After saving message to server
 			// socket.emit('sendMsg', data );
 			// socket.to(socketList[username]).emit('sendMsg', data );
-			const to = data.receiver,
-            message = data.message;
+			const to = data.receiver;
 
 			if(socketList.hasOwnProperty(to)){
 				socketList[to].emit('sendMsg', data);
