@@ -44,6 +44,8 @@ mongoose.connect(mongoDB).then(() => {
 
 const server = express()
 // .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+.use(bodyParser.urlencoded({ extended: false }))
+.use(bodyParser.json())
 .get('/', (req, res) => {
 	res.send('Chat server started !!!');
 })
@@ -73,8 +75,9 @@ const server = express()
 })
 .post('/data', function(req, res){
 	// res(res.body);
-
+console.log("====================== POST DATA : ");
 	const data = req.body;
+	console.log( data );
 	const message = new MessagesCollection( data );
 	// Save message to mongodb
 	message.save().then(() => {
