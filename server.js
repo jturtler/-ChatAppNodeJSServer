@@ -6,7 +6,8 @@ const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3111;
 
 
-const clientURL = "https://client-dev.psi-connect.org";
+// const clientURL = "https://client-dev.psi-connect.org";
+const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 
 let socketList = {};
