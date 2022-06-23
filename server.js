@@ -45,6 +45,9 @@ mongoose.connect(mongoDB).then(() => {
 const server = express();
 server.use((req, res) => res.sendFile(INDEX, { root: __dirname }));
 
+/** 
+ * Example URL: retrieveData?username1=test&username2=test3  
+ * */
 server.get("/data", (req, res) => {
 	const username1 = req.query.username1;
 	const username2 = req.query.username2;
@@ -92,12 +95,6 @@ server.post('/data', function(req, res){
 
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-/** 
- * Example URL: retrieveData?username1=test&username2=test3  
- * */
- server
-
-server
 
 
 
