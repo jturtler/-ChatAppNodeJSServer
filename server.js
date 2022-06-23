@@ -43,29 +43,29 @@ mongoose.connect(mongoDB).then(() => {
 const server = express()
 .use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json())
-.use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-.get('/', (req, res) => {
-	res.send('Chat server started !!!');
-})
-// .get("/data", (req, res) => {
-// 	const username1 = req.query.username1;
-// 	const username2 = req.query.username2;
+// .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+// .get('/', (req, res) => {
+// 	res.send('Chat server started !!!');
+// })
+.get("/data", (req, res) => {
+	const username1 = req.query.username1;
+	const username2 = req.query.username2;
 
-// 	if( username1 == undefined || username2 == undefined )
-// 	{
-// 		res.send( {status: "ERROR", msg: "Missing parameters 'username1' and 'username2'"} );
-// 	}
-// 	else
-// 	{
-// 		MessagesCollection.find().or([
-// 			{ sender: username1, receiver: username2 },
-// 			{ sender: username2, receiver: username1 }
-// 		])
-// 		.sort({ datetime: 1 })
-// 		.then(( result ) => {
-// 			res.send( result );
-// 		})
-// 	}
+	if( username1 == undefined || username2 == undefined )
+	{
+		res.send( {status: "ERROR", msg: "Missing parameters 'username1' and 'username2'"} );
+	}
+	else
+	{
+		MessagesCollection.find().or([
+			{ sender: username1, receiver: username2 },
+			{ sender: username2, receiver: username1 }
+		])
+		.sort({ datetime: 1 })
+		.then(( result ) => {
+			res.send( result );
+		})
+	}
 	
 
 // 	// res.send( res.json() );
