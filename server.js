@@ -43,7 +43,7 @@ mongoose.connect(mongoDB).then(() => {
 
 
 const server = express()
-.use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+// .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
 .get('/', (req, res) => {
 	res.send('Chat server started !!!');
 })
