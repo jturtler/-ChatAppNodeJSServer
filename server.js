@@ -18,7 +18,7 @@ const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 
 let socketList = {};
-const onlineUsers = [];
+let onlineUsers = [];
 
 
 
