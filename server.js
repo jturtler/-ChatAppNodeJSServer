@@ -6,8 +6,8 @@ const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3111;
 
 
-// const clientURL = "https://client-dev.psi-connect.org";
 const clientURL = "https://pwa-dev.psi-connect.org";
+// const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 
 let socketList = {};
@@ -26,7 +26,7 @@ const UsersCollection = require("./models/users");
 const mongoDB = "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/chatApp?retryWrites=true&w=majority";
 
 mongoose.connect(mongoDB).then(() => {
-	console.log("------------- mongo connected ");
+	console.log("====================================================== mongo connected ");
 }).catch(err => console.log(err))
 
 
@@ -41,54 +41,51 @@ mongoose.connect(mongoDB).then(() => {
 
 
 const server = express()
-.use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-// .use(bodyParser.urlencoded({ extended: false }))
-// .use(bodyParser.json())
+.use(bodyParser.urlencoded({ extended: false }))
+.use(bodyParser.json())
+// .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
 // .get('/', (req, res) => {
 // 	res.send('Chat server started !!!');
 // })
-// .get("/data", (req, res) => {
-// 	const username1 = req.query.username1;
-// 	const username2 = req.query.username2;
+.get("/data", (req, res) => {
+	const username1 = req.query.username1;
+	const username2 = req.query.username2;
 
-// 	if( username1 == undefined || username2 == undefined )
-// 	{
-// 		res.send( {status: "ERROR", msg: "Missing parameters 'username1' and 'username2'"} );
-// 	}
-// 	else
-// 	{
-// 		MessagesCollection.find().or([
-// 			{ sender: username1, receiver: username2 },
-// 			{ sender: username2, receiver: username1 }
-// 		])
-// 		.sort({ datetime: 1 })
-// 		.then(( result ) => {
-// 			res.send( result );
-// 		})
-// 	}
-	
+	if( username1 == undefined || username2 == undefined )
+	{
+		res.send( {status: "ERROR", msg: "Missing parameters 'username1' and 'username2'"} );
+	}
+	else
+	{
+		MessagesCollection.find().or([
+			{ sender: username1, receiver: username2 },
+			{ sender: username2, receiver: username1 }
+		])
+		.sort({ datetime: 1 })
+		.then(( result ) => {
+			res.send( result );
+		})
+	}
 
-// 	// res.send( res.json() );
-// })
-// .post('/data', function(req, res){
+	// res.send( res.json() );
+})
+.post('/data', function(req, res){
 
-// console.log("====================== POST DATA : ");
-// 	const data = req.body;
-// 	const message = new MessagesCollection( data );
-// 	// Save message to mongodb
-// 	message.save().then(() => {
+console.log("====================== POST DATA : ");
+	const data = req.body;
+	const message = new MessagesCollection( data );
+	// Save message to mongodb
+	message.save().then(() => {
 		
-// 		const to = data.receiver;
-// console.log( "====================================================== socketList" );
-// console.log( socketList );
-// 		if(socketList.hasOwnProperty(to)){
-// 			socketList[to].emit( 'sendMsg', data );
-// 		}
+		const to = data.receiver;
+		if(socketList.hasOwnProperty(to)){
+			socketList[to].emit( 'sendMsg', data );
+		}
 
-// console.log("---------- Data is sent.");
-// 		res.send({msg:"Data is sent.", "status": "SUCCESS"});
-// 	})
-// })
+console.log("---------- Data is sent.");
+		res.send({msg:"Data is sent.", "status": "SUCCESS"});
+	})
+})
 .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 // ====================
@@ -122,8 +119,6 @@ io.on('connection', (socket) => {
 		console.log("====================================================== username : " + username );
 		
 		socketList[username] = socket;
-		console.log("====================================================== socketList : " );
-		console.log(socketList );
 		onlineUsers.push( username );
 
 		UsersCollection.find({username: username}).then(( list ) => {
@@ -155,7 +150,7 @@ io.on('connection', (socket) => {
 		
 		onlineUsers.push( user.username );
 		socket.emit('userStatusUpdate', {username: user.username, status: "online"} );
-		console.log('====================================================== User ' +  user.username + ' logged');
+
 		// saving userId to object with socket ID
 		// users[socket.id] = data.userId;
 	});
@@ -168,7 +163,6 @@ io.on('connection', (socket) => {
 		
 		onlineUsers.splice( onlineUsers.indexOf( user.username), 1 );
 		socket.emit('userStatusUpdate', {username: user.username, status: "offline"} );
-		console.log('====================================================== User ' +  user.username + ' logout');
 	});
 
 
