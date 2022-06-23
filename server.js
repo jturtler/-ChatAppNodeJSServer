@@ -9,13 +9,16 @@
 'use strict';
 
 const express = require('express');
-const socketIO = require('socket.io');
+const bodyParser = require("body-parser");
 
 const PORT = process.env.PORT || 3111;
 
 
 const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
+
+let socketList = {};
+const onlineUsers = [];
 
 
 
@@ -39,12 +42,123 @@ mongoose.connect(mongoDB).then(() => {
 // =======================================================================================================
 
 
-const onlineUsers = [];
-
-
 const server = express()
-  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+// .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+.use(bodyParser.urlencoded({ extended: false }))
+.use(bodyParser.json())
+.get('/', (req, res) => {
+	res.send('Chat server started !!!');
+})
+.get("/data", (req, res) => {
+	const username1 = req.query.username1;
+	const username2 = req.query.username2;
+
+	if( username1 == undefined || username2 == undefined )
+	{
+		res.send( {status: "ERROR", msg: "Missing parameters 'username1' and 'username2'"} );
+	}
+	else
+	{
+		MessagesCollection.find().or([
+			{ sender: username1, receiver: username2 },
+			{ sender: username2, receiver: username1 }
+		])
+		.sort({ datetime: 1 })
+		.then(( result ) => {
+			res.send( result );
+			// socket.emit('messageList', { messages: result, users: users } );
+		})
+	}
+	
+
+	// res.send( res.json() );
+})
+.post('/data', function(req, res){
+	// res(res.body);
+console.log("====================== POST DATA : ");
+	const data = req.body;
+	console.log( data );
+	const message = new MessagesCollection( data );
+	// Save message to mongodb
+	message.save().then(() => {
+		// After saving message to server
+		// socket.broadcast.emit('sendMsg', data );
+
+		const to = data.receiver;
+		if(socketList.hasOwnProperty(to)){
+			socketList[to].emit( 'sendMsg', data );
+		}
+
+		console.log("---------- Data is sent.");
+		res.send({msg:"Data is sent.", "status": "SUCCESS"});
+	})
+})
+.listen(PORT, () => console.log(`Listening on ${PORT}`));
+
+// const server = express();
+// server.use((req, res) => res.sendFile(INDEX, { root: __dirname }));
+// server.use(bodyParser.urlencoded({ extended: false }));
+// server.use(bodyParser.json());
+// server.get('/', (req, res) => {
+// 	res.send('Chat server started !!!');
+// })
+
+// /** 
+//  * Example URL: retrieveData?username1=test&username2=test3  
+//  * */
+
+// server.get("/data", (req, res) => {
+// 	const username1 = req.query.username1;
+// 	const username2 = req.query.username2;
+
+// 	if( username1 == undefined || username2 == undefined )
+// 	{
+// 		res.send( {status: "ERROR", msg: "Missing parameters 'username1' and 'username2'"} );
+// 	}
+// 	else
+// 	{
+// 		MessagesCollection.find().or([
+// 			{ sender: username1, receiver: username2 },
+// 			{ sender: username2, receiver: username1 }
+// 		])
+// 		.sort({ datetime: 1 })
+// 		.then(( result ) => {
+// 			res.send( result );
+// 			// socket.emit('messageList', { messages: result, users: users } );
+// 		})
+// 	}
+	
+
+// 	// res.send( res.json() );
+// });
+	
+// server.post('/data', function(req, res){
+// 	// res(res.body);
+
+// 	const data = req.body;
+// 	const message = new MessagesCollection( data );
+// 	// Save message to mongodb
+// 	message.save().then(() => {
+// 		// After saving message to server
+// 		// socket.broadcast.emit('sendMsg', data );
+
+// 		const to = data.receiver;
+// 		if(socketList.hasOwnProperty(to)){
+// 			socketList[to].emit( 'sendMsg', data );
+// 		}
+
+// 		console.log("---------- Data is sent.");
+// 		res.send({msg:"Data is sent.", "status": "SUCCESS"});
+// 	})
+// });
+
+// server.listen(PORT, () => console.log(`Listening on ${PORT}`));
+
+
+
+// =======================================================================================================
+// INIT Socket IO
+// ====================
 
 const io = require('socket.io')(server,{
   cors: {
@@ -65,6 +179,7 @@ io.on('connection', (socket) => {
   	socket.on('username', (username) => {
 
 		console.log("====================================================== username : " + username );
+		socketList[username] = socket;
 		onlineUsers.push( username );
 
 		UsersCollection.find({username: username}).then(( list ) => {
@@ -137,7 +252,14 @@ io.on('connection', (socket) => {
 		// Save message to mongodb
 		message.save().then(() => {
 			// After saving message to server
-			socket.broadcast.emit('sendMsg', data );
+			// socket.emit('sendMsg', data );
+			// socket.to(socketList[username]).emit('sendMsg', data );
+			const to = data.receiver,
+            message = data.message;
+
+			if(socketList.hasOwnProperty(to)){
+				socketList[to].emit('sendMsg', data);
+			}
 		})
 	});
 
