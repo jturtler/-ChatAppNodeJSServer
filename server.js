@@ -49,7 +49,7 @@ mongoose.connect(mongoDB).then(() => {
 
 
 const server = express()
-// // .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+.use((req, res) => res.sendFile(INDEX, { root: __dirname }))
 // .use(bodyParser.urlencoded({ extended: false }))
 // .use(bodyParser.json())
 // // .get('/', (req, res) => {
