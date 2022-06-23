@@ -69,25 +69,25 @@ const server = express()
 
 	// res.send( res.json() );
 })
-// .post('/data', function(req, res){
+.post('/data', function(req, res){
 
-// console.log("====================== POST DATA : ");
-// 	const data = req.body;
-// 	const message = new MessagesCollection( data );
-// 	// Save message to mongodb
-// 	message.save().then(() => {
+console.log("====================== POST DATA : ");
+	const data = req.body;
+	const message = new MessagesCollection( data );
+	// Save message to mongodb
+	message.save().then(() => {
 		
-// 		const to = data.receiver;
-// console.log( "====================================================== socketList" );
-// console.log( socketList );
-// 		if(socketList.hasOwnProperty(to)){
-// 			socketList[to].emit( 'sendMsg', data );
-// 		}
+		const to = data.receiver;
+console.log( "====================================================== socketList" );
+console.log( socketList );
+		if(socketList.hasOwnProperty(to)){
+			socketList[to].emit( 'sendMsg', data );
+		}
 
-// console.log("---------- Data is sent.");
-// 		res.send({msg:"Data is sent.", "status": "SUCCESS"});
-// 	})
-// })
+console.log("---------- Data is sent.");
+		res.send({msg:"Data is sent.", "status": "SUCCESS"});
+	})
+})
 .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 // ====================
