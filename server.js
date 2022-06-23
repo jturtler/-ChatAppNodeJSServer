@@ -9,6 +9,7 @@
 'use strict';
 
 const express = require('express');
+const bodyParser = require("body-parser");
 const socketIO = require('socket.io');
 
 const PORT = process.env.PORT || 3111;
@@ -43,11 +44,17 @@ mongoose.connect(mongoDB).then(() => {
 
 
 const server = express();
-server.use((req, res) => res.sendFile(INDEX, { root: __dirname }));
+// server.use((req, res) => res.sendFile(INDEX, { root: __dirname }));
+server.use(bodyParser.urlencoded({ extended: false }));
+server.use(bodyParser.json());
+server.get('/', (req, res) => {
+	res.send('Chat server started !!!');
+})
 
 /** 
  * Example URL: retrieveData?username1=test&username2=test3  
  * */
+
 server.get("/data", (req, res) => {
 	const username1 = req.query.username1;
 	const username2 = req.query.username2;
