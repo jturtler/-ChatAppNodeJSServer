@@ -76,12 +76,12 @@ const server = express()
 	// res(res.body);
 console.log("====================== POST DATA : ");
 	const data = req.body;
-	console.log( data );
 	const message = new MessagesCollection( data );
 	// Save message to mongodb
 	message.save().then(() => {
 		
 		const to = data.receiver;
+		console.log( "socketList" );
 		console.log( socketList );
 		if(socketList.hasOwnProperty(to)){
 			socketList[to].emit( 'sendMsg', data );
