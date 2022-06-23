@@ -38,7 +38,12 @@ mongoose.connect(mongoDB).then(() => {
 
 
 // ====================
-// Mongo Connection
+// END - Mongo Connection
+// =======================================================================================================
+
+
+// ====================
+// Server
 // =======================================================================================================
 
 
@@ -73,7 +78,7 @@ const server = express()
 	// res.send( res.json() );
 })
 .post('/data', function(req, res){
-	// res(res.body);
+
 console.log("====================== POST DATA : ");
 	const data = req.body;
 	const message = new MessagesCollection( data );
@@ -81,76 +86,21 @@ console.log("====================== POST DATA : ");
 	message.save().then(() => {
 		
 		const to = data.receiver;
-		console.log( "socketList" );
-		console.log( socketList );
+console.log( "====================================================== socketList" );
+console.log( socketList );
 		if(socketList.hasOwnProperty(to)){
 			socketList[to].emit( 'sendMsg', data );
 		}
 
-		console.log("---------- Data is sent.");
+console.log("---------- Data is sent.");
 		res.send({msg:"Data is sent.", "status": "SUCCESS"});
 	})
 })
 .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-// const server = express();
-// server.use((req, res) => res.sendFile(INDEX, { root: __dirname }));
-// server.use(bodyParser.urlencoded({ extended: false }));
-// server.use(bodyParser.json());
-// server.get('/', (req, res) => {
-// 	res.send('Chat server started !!!');
-// })
-
-// /** 
-//  * Example URL: retrieveData?username1=test&username2=test3  
-//  * */
-
-// server.get("/data", (req, res) => {
-// 	const username1 = req.query.username1;
-// 	const username2 = req.query.username2;
-
-// 	if( username1 == undefined || username2 == undefined )
-// 	{
-// 		res.send( {status: "ERROR", msg: "Missing parameters 'username1' and 'username2'"} );
-// 	}
-// 	else
-// 	{
-// 		MessagesCollection.find().or([
-// 			{ sender: username1, receiver: username2 },
-// 			{ sender: username2, receiver: username1 }
-// 		])
-// 		.sort({ datetime: 1 })
-// 		.then(( result ) => {
-// 			res.send( result );
-// 			// socket.emit('messageList', { messages: result, users: users } );
-// 		})
-// 	}
-	
-
-// 	// res.send( res.json() );
-// });
-	
-// server.post('/data', function(req, res){
-// 	// res(res.body);
-
-// 	const data = req.body;
-// 	const message = new MessagesCollection( data );
-// 	// Save message to mongodb
-// 	message.save().then(() => {
-// 		// After saving message to server
-// 		// socket.broadcast.emit('sendMsg', data );
-
-// 		const to = data.receiver;
-// 		if(socketList.hasOwnProperty(to)){
-// 			socketList[to].emit( 'sendMsg', data );
-// 		}
-
-// 		console.log("---------- Data is sent.");
-// 		res.send({msg:"Data is sent.", "status": "SUCCESS"});
-// 	})
-// });
-
-// server.listen(PORT, () => console.log(`Listening on ${PORT}`));
+// ====================
+// END - Server
+// =======================================================================================================
 
 
 
