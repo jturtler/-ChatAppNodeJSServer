@@ -52,9 +52,9 @@ const server = express()
 // .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
 .use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json())
-.get('/', (req, res) => {
-	res.send('Chat server started !!!');
-})
+// .get('/', (req, res) => {
+// 	res.send('Chat server started !!!');
+// })
 .get("/data", (req, res) => {
 	const username1 = req.query.username1;
 	const username2 = req.query.username2;
