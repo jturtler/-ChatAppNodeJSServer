@@ -42,14 +42,10 @@ mongoose.connect(mongoDB).then(() => {
 // =======================================================================================================
 
 
-const server = express()
-  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+const server = express();
+server.use((req, res) => res.sendFile(INDEX, { root: __dirname }));
 
-/** 
- * Example URL: retrieveData?username1=test&username2=test3  
- * */
- server.get("/data", (req, res) => {
+server.get("/data", (req, res) => {
 	const username1 = req.query.username1;
 	const username2 = req.query.username2;
 
@@ -72,8 +68,8 @@ const server = express()
 	
 
 	// res.send( res.json() );
-})
-
+});
+	
 server.post('/data', function(req, res){
 	// res(res.body);
 
@@ -93,6 +89,15 @@ server.post('/data', function(req, res){
 		res.send({msg:"Data is sent.", "status": "SUCCESS"});
 	})
 });
+
+server.listen(PORT, () => console.log(`Listening on ${PORT}`));
+
+/** 
+ * Example URL: retrieveData?username1=test&username2=test3  
+ * */
+ server
+
+server
 
 
 
