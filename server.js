@@ -14,7 +14,7 @@ const socketIO = require('socket.io');
 const PORT = process.env.PORT || 3111;
 
 
-const clientURL = "https://pwa-dev.psi-connect.org";
+const clientURL = "https://client-dev.psi-connect.org";
 const INDEX = '/index.html';
 
 
@@ -137,7 +137,7 @@ io.on('connection', (socket) => {
 		// Save message to mongodb
 		message.save().then(() => {
 			// After saving message to server
-			socket.broadcast.emit('sendMsg', data );
+			socket.emit('sendMsg', data );
 		})
 	});
 
