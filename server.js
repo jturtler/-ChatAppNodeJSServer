@@ -17,6 +17,9 @@ const PORT = process.env.PORT || 3111;
 const clientURL = "https://client-dev.psi-connect.org";
 const INDEX = '/index.html';
 
+let socketList = {};
+const onlineUsers = [];
+
 
 
 // =======================================================================================================
@@ -37,9 +40,6 @@ mongoose.connect(mongoDB).then(() => {
 // ====================
 // Mongo Connection
 // =======================================================================================================
-
-
-const onlineUsers = [];
 
 
 const server = express()
@@ -65,6 +65,7 @@ io.on('connection', (socket) => {
   	socket.on('username', (username) => {
 
 		console.log("====================================================== username : " + username );
+		socketList[username] = socket;
 		onlineUsers.push( username );
 
 		UsersCollection.find({username: username}).then(( list ) => {
@@ -137,7 +138,14 @@ io.on('connection', (socket) => {
 		// Save message to mongodb
 		message.save().then(() => {
 			// After saving message to server
-			socket.emit('sendMsg', data );
+			// socket.emit('sendMsg', data );
+			// socket.to(socketList[username]).emit('sendMsg', data );
+			const to = data.receiver,
+            message = data.message;
+
+			if(socketList.hasOwnProperty(to)){
+				socketList[to].emit('sendMsg', data);
+			}
 		})
 	});
 
