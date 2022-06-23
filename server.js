@@ -1,11 +1,3 @@
-
-
-
-// =======================================================================================================
-// For PWA server
-// ====================
-
-
 'use strict';
 
 const express = require('express');
@@ -14,8 +6,8 @@ const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3111;
 
 
-// const clientURL = "https://client-dev.psi-connect.org";
-const clientURL = "http://localhost:8080";
+const clientURL = "https://client-dev.psi-connect.org";
+// const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 
 let socketList = {};
@@ -49,12 +41,12 @@ mongoose.connect(mongoDB).then(() => {
 
 
 const server = express()
+.use(bodyParser.urlencoded({ extended: false }))
+.use(bodyParser.json())
 .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-// .use(bodyParser.urlencoded({ extended: false }))
-// .use(bodyParser.json())
-// // .get('/', (req, res) => {
-// // 	res.send('Chat server started !!!');
-// // })
+.get('/', (req, res) => {
+	res.send('Chat server started !!!');
+})
 // .get("/data", (req, res) => {
 // 	const username1 = req.query.username1;
 // 	const username2 = req.query.username2;
@@ -74,6 +66,7 @@ const server = express()
 // 			res.send( result );
 // 		})
 // 	}
+	
 
 // 	// res.send( res.json() );
 // })
