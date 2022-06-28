@@ -6,7 +6,8 @@ const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3111;
 
 
-const clientURL = "https://client-dev.psi-connect.org";
+const clientURL = "https://localhost:3111";
+// const clientURL = "https://client-dev.psi-connect.org";
 // const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 
@@ -22,6 +23,7 @@ let onlineUsers = [];
 const mongoose = require("mongoose");
 const MessagesCollection = require("./models/messages");
 const UsersCollection = require("./models/users");
+const UserManagement = require('./utils/userManagement');
 
 const mongoDB = "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/chatApp?retryWrites=true&w=majority";
 
@@ -71,20 +73,19 @@ const server = express()
 })
 .post('/data', function(req, res){
 
-console.log("====================== POST DATA : ");
 	const data = req.body;
+
+	const userManagement = new UserManagement( data.sender, data.receiver );
+	userManagement.createIfNotExist();
+
 	const message = new MessagesCollection( data );
 	// Save message to mongodb
 	message.save().then(() => {
 		
 		const to = data.receiver;
-console.log( "====================================================== socketList" );
-console.log( socketList );
 		if(socketList.hasOwnProperty(to)){
 			socketList[to].emit( 'sendMsg', data );
 		}
-
-console.log("---------- Data is sent.");
 		res.send({msg:"Data is sent.", "status": "SUCCESS"});
 	})
 })
@@ -109,9 +110,6 @@ const io = require('socket.io')(server,{
 });
 
 io.on('connection', (socket) => {
-
-  	console.log("====================================================== Connected to server : " + socket.id );
-
 	
 	// -----------------------------------------------------------------------------------------------------
 	// Username event
@@ -121,8 +119,6 @@ io.on('connection', (socket) => {
 		console.log("====================================================== username : " + username );
 		
 		socketList[username] = socket;
-		console.log("====================================================== socketList : " );
-		console.log(socketList );
 		onlineUsers.push( username );
 
 		UsersCollection.find({username: username}).then(( list ) => {
@@ -142,7 +138,6 @@ io.on('connection', (socket) => {
 				socket.emit('wrongUserName', { msg: `Cannot find the username ${username}`});
 			}
 		});
-
 
 	});
 
