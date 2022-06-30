@@ -40,19 +40,19 @@ const onlineUsers = [];
 // Create APP
 // ====================
 
-const app = express();
+const app = express()
 
-app.use(cors())
+.use(cors())
 // app.use(express.static(__dirname + '/uploads'))
 //Here we are configuring express to use body-parser as middle-ware.
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.get('/', (req, res) => {
+.use(bodyParser.urlencoded({ extended: false }))
+.use(bodyParser.json())
+.get('/', (req, res) => {
 	res.send('Chat server started !!!');
 })
 
 
-app.get("/users", (req, res) => {
+.get("/users", (req, res) => {
 	UsersCollection.find({username: req.query.username}).then(( list ) => {
 		if( list.length > 0 )
 		{
@@ -77,7 +77,7 @@ app.get("/users", (req, res) => {
 /** 
  * Example URL: retrieveData?username1=test&username2=test3  
  * */
-app.get("/messages", (req, res) => {
+.get("/messages", (req, res) => {
 	const username1 = req.query.username1;
 	const username2 = req.query.username2;
 
@@ -98,7 +98,7 @@ app.get("/messages", (req, res) => {
 	}
 })
 
-app.post('/messages', function(req, res){
+.post('/messages', function(req, res){
 	// res(res.body);
 
 	const data = req.body;
