@@ -8,18 +8,11 @@ const userSchema = new mongoose.Schema({
 			type: String,
 			required: true
 	},
-	// contacts: {
-	// 	type: Array,
-	// 	required: true
-	// },
-	contacts: [
-		{
-			contactName: String,
-			hasNewMessages: Boolean,
-		}
-	]
+	contacts: {
+		type: Array,
+		required: true
+	}
 })
 
-// const UsersCollection = mongoose.model('users', userSchema);
-const UsersCollection = mongoose.model('users1', userSchema);
+const UsersCollection = mongoose.model('users', userSchema);
 module.exports = UsersCollection;
