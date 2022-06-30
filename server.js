@@ -46,7 +46,7 @@ mongoose.connect(mongoDB).then(() => {
 
 const server = express()
 // .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-// .use(cors())
+.use(cors())
 .use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json())
 .get('/', (req, res) => {
