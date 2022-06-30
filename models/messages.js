@@ -23,8 +23,7 @@ const msgSchema = new mongoose.Schema({
 	name: {
         type: String,
         required: false
-    }
-    ,
+    },
 	msgtype: {
         type: String,
         required: false
