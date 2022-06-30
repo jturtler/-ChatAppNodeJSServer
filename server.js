@@ -46,7 +46,7 @@ mongoose.connect(mongoDB).then(() => {
 
 const server = express()
 // .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-.use(cors())
+// .use(cors())
 .use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json())
 .get('/', (req, res) => {
@@ -73,10 +73,6 @@ const server = express()
 		}
 	});
 })
-
-/** 
- * Example URL: retrieveData?username1=test&username2=test3  
- * */
 .get("/messages", (req, res) => {
 	const username1 = req.query.username1;
 	const username2 = req.query.username2;
