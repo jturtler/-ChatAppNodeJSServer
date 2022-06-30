@@ -1,25 +1,27 @@
 
+'use strict';
+
 const express = require('express');
 var cors = require('cors')
 const bodyParser = require("body-parser");
-
 const crypto = require("crypto");
 const randomId = () => crypto.randomBytes(8).toString("hex");
-
 const { InMemorySessionStore } = require("./clazz/sessionStore");
 const sessionStore = new InMemorySessionStore();
-
-const {ServerUtils} = require("./utils/utils");
-const serverUtils = new ServerUtils();
-
 
 const mongoose = require("mongoose");
 const MessagesCollection = require("./models/messages");
 const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
+const {ServerUtils} = require("./utils/utils");
+const serverUtils = new ServerUtils();
+
 
 const PORT = process.env.PORT || 3111;
+// const clientURL = "http://localhost:8080";
+const clientURL = "https://client-dev.psi-connect.org";
+// const clientURL = "https://pwa-dev.psi-connect.org";
 
 
 // =======================================================================================================
@@ -45,9 +47,7 @@ const onlineUsers = [];
 // ====================
 
 const app = express()
-
 .use(cors())
-// app.use(express.static(__dirname + '/uploads'))
 //Here we are configuring express to use body-parser as middle-ware.
 .use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json())
@@ -118,8 +118,11 @@ const app = express()
 			}
 			res.send({msg:"Data is sent.", "status": "SUCCESS"});
 		})
-	});
+	})
 }).listen(PORT, () => console.log(`Listening on ${PORT}`));
+
+// Create server
+const server = require('http').Server(app);
 
 // ====================
 // END - Create APP
@@ -128,18 +131,9 @@ const app = express()
 
 
 // =======================================================================================================
-// Create server
-// ====================
-
-const server = require('http').Server(app);
-// const clientURL = "http://localhost:8080";
-const clientURL = "https://client-dev.psi-connect.org";
-// const clientURL = "https://pwa-dev.psi-connect.org";
-
-
-// =======================================================================================================
 // INIT Socket IO
 // ====================
+
 const io = require("socket.io")(server, {
 	cors: {
 		origin: clientURL,
@@ -324,6 +318,3 @@ io.on('connection', socket => {
 	});
 
 });
-
-
-// server.listen(3111, () => console.log(`Server running on port 3111`));
