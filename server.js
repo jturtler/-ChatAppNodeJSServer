@@ -18,6 +18,10 @@ const MessagesCollection = require("./models/messages");
 const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
+
+const PORT = process.env.PORT || 3111;
+
+
 // =======================================================================================================
 // Mongo Connection
 // ====================
@@ -115,7 +119,7 @@ const app = express()
 			res.send({msg:"Data is sent.", "status": "SUCCESS"});
 		})
 	});
-});
+}).listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 // ====================
 // END - Create APP
@@ -322,4 +326,4 @@ io.on('connection', socket => {
 });
 
 
-server.listen(3111, () => console.log(`Server running on port 3111`));
+// server.listen(3111, () => console.log(`Server running on port 3111`));
