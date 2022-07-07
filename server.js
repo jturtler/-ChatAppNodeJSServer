@@ -24,8 +24,8 @@ const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
 const PORT = process.env.PORT || 3111;
-// const clientURL = 'http://127.0.0.1:8887'; 
-const clientURL = "https://pwa-dev.psi-connect.org";
+const clientURL = 'http://127.0.0.1:8887'; 
+// const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 let socketList = [];
 
@@ -90,6 +90,15 @@ const server = express()
 		res.send({status: "ERROR", msg: ex.message});
 	}
 	
+})
+.post("/users", (req, res) => {
+	const username1 = req.body.username1;
+	const username2 = req.body.username2;
+
+	const userManagement = new UserManagement( username1, username2 );
+	userManagement.createIfNotExist( function(){
+		res.send({msg: `The user is created.`, "status": "SUCCESS"});
+	})
 })
 .get("/messages", (req, res) => {
 	const username1 = req.query.username1;
@@ -310,6 +319,23 @@ io.on('connection', socket => {
 		.sort({ datetime: 1 })
 		.then(( result ) => {
 			socket.emit('message_list', { messages: result, users: users } );
+		})
+	});
+
+	
+	socket.on('create_new_user', ( data ) => {
+		console.log("---------- create_new_user");
+		const userManagement = new UserManagement( data.username1, data.username2 );
+		userManagement.createIfNotExist( function(userList){
+			if(socketList.hasOwnProperty(data.username2)){
+				const found = serverUtils.findItemFromList( userList, data.username1, "username" );
+				socketList[data.username2].emit('new_user_created', found);
+			}
+
+			if(socketList.hasOwnProperty(data.username1)){
+				const found = serverUtils.findItemFromList( userList, data.username2, "username" );
+				socketList[data.username1].emit('new_user_created', found);
+			}
 		})
 	});
 

@@ -20,27 +20,27 @@ const UserManagement = class {
 			{
 				if( list[0].username == this.username1 )
 				{
-					this.create( me.username2, me.username1, function(){
-						me.updateContact( list[0], me.username2, function( newUserData ) {
-							exeFunc( [newUserData] );
+					this.create( me.username2, me.username1, function(newUserData2){
+						me.updateContact( list[0], me.username2, function( newUserData1 ) {
+							exeFunc( [newUserData1, newUserData2] );
 						} );
 					} );
 					
 				}
 				else if( list[0].username == this.username2 )
 				{
-					this.create( me.username1, me.username2, function(){
-						me.updateContact( list[0], me.username1, function( newUserData ) {
-							exeFunc( [newUserData] );
+					this.create( me.username1, me.username2, function( newUserData1 ){
+						me.updateContact( list[0], me.username1, function( newUserData2 ) {
+							exeFunc( [newUserData1, newUserData2] );
 						} );
 					} );
 				}
 			}
 			else if( list.length == 0 )
 			{
-				this.create(me.username1, me.username2, function( ){
-					me.create(me.username2, me.username1, function(){
-						exeFunc(); // Should put the userData for username1 and username2
+				this.create(me.username1, me.username2, function( userData1 ){
+					me.create(me.username2, me.username1, function( userData2 ){
+						exeFunc([userData1, userData2]); // Should put the userData for username1 and username2
 					});
 				});
 				
@@ -50,17 +50,17 @@ const UserManagement = class {
 				// Check ContactList and update
 				if( list[0].username == this.username1 )
 				{
-					me.updateContact( list[0], me.username2, function() {
-						me.updateContact( list[1], me.username1, function(){
-							exeFunc();
-						} )
-					})
+					me.updateContact( list[0], me.username2, function( userData1 ) {
+						me.updateContact( list[1], me.username1, function( userData2 ){
+							exeFunc([userData1, userData2]);
+						});
+					});
 				}
 				else
 				{
-					me.updateContact( list[0], me.username1, function() {
-						me.updateContact( list[1], me.username2, function(){
-							exeFunc();
+					me.updateContact( list[0], me.username1, function( userData1 ) {
+						me.updateContact( list[1], me.username2, function(userData2){
+							exeFunc([userData1, userData2]);
 						} )
 					})
 				}
@@ -78,8 +78,7 @@ const UserManagement = class {
 		// Save message to mongodb
 		const user = new UsersCollection( data );
 		user.save(function(err){
-			console.log("saved .");
-			if( exeFunc ) exeFunc();
+			if( exeFunc ) exeFunc( user );
 		})
 	}
 
