@@ -24,8 +24,8 @@ const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
 const PORT = process.env.PORT || 3111;
-const clientURL = 'http://127.0.0.1:8887'; 
-// const clientURL = "https://pwa-dev.psi-connect.org";
+// const clientURL = 'http://127.0.0.1:8887'; 
+const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 let socketList = [];
 
@@ -91,15 +91,15 @@ const server = express()
 	}
 	
 })
-.post("/users", (req, res) => {
-	const username1 = req.body.username1;
-	const username2 = req.body.username2;
+// .post("/users", (req, res) => {
+// 	const username1 = req.body.username1;
+// 	const username2 = req.body.username2;
 
-	const userManagement = new UserManagement( username1, username2 );
-	userManagement.createIfNotExist( function(){
-		res.send({msg: `The user is created.`, "status": "SUCCESS"});
-	})
-})
+// 	const userManagement = new UserManagement( username1, username2 );
+// 	userManagement.createIfNotExist( function(){
+// 		res.send({msg: `The user is created.`, "status": "SUCCESS"});
+// 	})
+// })
 .get("/messages", (req, res) => {
 	const username1 = req.query.username1;
 	const username2 = req.query.username2;
