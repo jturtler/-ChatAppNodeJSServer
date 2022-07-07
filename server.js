@@ -91,15 +91,15 @@ const server = express()
 	}
 	
 })
-// .post("/users", (req, res) => {
-// 	const username1 = req.body.username1;
-// 	const username2 = req.body.username2;
+.post("/users", (req, res) => {
+	const username1 = req.body.username1;
+	const username2 = req.body.username2;
 
-// 	const userManagement = new UserManagement( username1, username2 );
-// 	userManagement.createIfNotExist( function(){
-// 		res.send({msg: `The user is created.`, "status": "SUCCESS"});
-// 	})
-// })
+	const userManagement = new UserManagement( username1, username2 );
+	userManagement.createIfNotExist( function(){
+		res.send({msg: `The user is created.`, "status": "SUCCESS"});
+	})
+})
 .get("/messages", (req, res) => {
 	const username1 = req.query.username1;
 	const username2 = req.query.username2;
