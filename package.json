@@ -2,7 +2,7 @@
   "name": "chatapp",
   "version": "1.0.0",
   "description": "PWA Chat App",
-  "main": "server.js",
+  "main": "siChatSrv.js",
   "scripts": {
     "start": "node server",
     "dev": "nodemon server"

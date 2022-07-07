@@ -24,6 +24,7 @@ const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
 const PORT = process.env.PORT || 3111;
+// const clientURL = 'http://127.0.0.1:8887'; 
 const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 let socketList = [];
@@ -54,25 +55,41 @@ const server = express()
 	res.send('Chat server started !!!');
 })
 .get("/users", (req, res) => {
-	UsersCollection.find({username: req.query.username}).then(( list ) => {
-		if( list.length > 0 )
-		{
-			const curUser = list[0];
-			let contactNameList = curUser.contacts.map(contact => contact.contactName);
-
-			UsersCollection.find(
-				{ username: { $in: contactNameList } }
-			)
-			.sort({ fullName: 1 })
-			.then(( contactList ) => {
-				res.send({ curUser: curUser, contacts: contactList });
-			})
-		}
-		else
-		{
-			res.send({ status: "ERROR", msg: `Cannot find the username ${username}`});
-		}
-	});
+	const username = req.query.username;
+	try{
+		UsersCollection.find({username: username}).then(( list ) => {
+			if( list.length > 0 )
+			{
+				const curUser = list[0];
+				let contactNameList = curUser.contacts.map(contact => contact.contactName);
+	
+				UsersCollection.find(
+					{ username: { $in: contactNameList } }
+				)
+				.sort({ fullName: 1 })
+				.then(( contactList ) => {
+					res.send({ curUser: curUser, contacts: contactList });
+				})
+			}
+			else
+			{
+				const curUser = {
+					username: username,
+					contacts: [],
+					fullName: username
+				}
+				const user = new UsersCollection( curUser );
+				user.save().then(() => {
+					res.send({ curUser: curUser, contacts: [] });
+				})
+			}
+		});
+	}
+	catch( ex )
+	{
+		res.send({status: "ERROR", msg: ex.message});
+	}
+	
 })
 .get("/messages", (req, res) => {
 	const username1 = req.query.username1;
@@ -94,17 +111,12 @@ const server = express()
 			// socket.emit('messageList', { messages: result, users: users } );
 		})
 	}
-	
-
-	// res.send( res.json() );
 })
 .post('/messages', function(req, res){
-		// res(res.body);
-
 	const data = req.body;
 
 	const userManagement = new UserManagement( data.sender, data.receiver );
-	userManagement.createIfNotExist(function( newUserData ){
+	userManagement.createIfNotExist( function(){
 		// Save message to mongodb
 		const message = new MessagesCollection( data );
 		message.save().then(() => {
