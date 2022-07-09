@@ -18,14 +18,18 @@ const sessionStore = new InMemorySessionStore();
 const {ServerUtils} = require("./utils/utils");
 const serverUtils = new ServerUtils();
 
+const {MessageUtils} = require("./utils/messageUtils");
+const messageUtils = new MessageUtils();
+
+
 const mongoose = require("mongoose");
 const MessagesCollection = require("./models/messages");
 const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
 const PORT = process.env.PORT || 3111;
-// const clientURL = 'http://127.0.0.1:8887'; 
-const clientURL = "https://pwa-dev.psi-connect.org";
+const clientURL = 'http://127.0.0.1:8887'; 
+// const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 let socketList = [];
 
@@ -236,16 +240,19 @@ io.on('connection', socket => {
 		const message = new MessagesCollection( data );
 		// Save message to mongodb
 		message.save().then(() => {
+
+			// Send message to Whatsapp
+			messageUtils.sendWtsaMessage( data.sender, data.receiver, data.message );
+
+			// Send to message
 			const users = sessionStore.getAllUsers();
 			const to = serverUtils.findItemFromList( users, data.receiver, "username");
 			if( to != undefined )
 			{
-				console.log("-- data sent to " + to.userID + " and " + socket.userID );
 				socket.to(to.userID).to(socket.userID).emit("sendMsg", data );
 			}
 			else
 			{
-				console.log("-- data sent to " + socket.userID );
 				socket.to(socket.userID).emit("sendMsg", data );
 			}
 		})
