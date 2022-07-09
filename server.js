@@ -242,7 +242,7 @@ io.on('connection', socket => {
 		message.save().then(() => {
 
 			// Send message to Whatsapp
-			messageUtils.sendWtsaMessage( data.sender, data.receiver, data.message );
+			messageUtils.sendWtsaMessage( data.sender, data.receiver, data.msg );
 
 			// Send to message
 			const users = sessionStore.getAllUsers();
