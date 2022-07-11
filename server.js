@@ -28,8 +28,8 @@ const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
 const PORT = process.env.PORT || 3111;
-// const clientURL = 'http://127.0.0.1:8887'; 
-const clientURL = "https://pwa-dev.psi-connect.org";
+const clientURL = 'http://127.0.0.1:8887'; 
+// const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 let socketList = [];
 
@@ -51,7 +51,6 @@ mongoose.connect(mongoDB).then(() => {
 
 
 const server = express()
-// .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
 .use(cors())
 .use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json())
@@ -121,7 +120,6 @@ const server = express()
 		.sort({ datetime: 1 })
 		.then(( result ) => {
 			res.send( result );
-			// socket.emit('messageList', { messages: result, users: users } );
 		})
 	}
 })
@@ -331,7 +329,6 @@ io.on('connection', socket => {
 
 	
 	socket.on('create_new_user', ( data ) => {
-		console.log("---------- create_new_user");
 		const userManagement = new UserManagement( data.username1, data.username2 );
 		userManagement.createIfNotExist( function(userList){
 			if(socketList.hasOwnProperty(data.username2)){
@@ -344,6 +341,46 @@ io.on('connection', socket => {
 				socketList[data.username1].emit('new_user_created', found);
 			}
 		})
+	});
+
+	
+	socket.on('remove_contact', ( {userData, contactName} ) => {
+
+		const contacts = serverUtils.removeFromList( userData.contacts, contactName, "contactName");
+		userData.fullName = "GT2_TEST_IPC 1";
+
+		// // Update message to mongodb
+		// const user = new UsersCollection( userData );
+		// user.save(function(){
+		// 	console.log(userData.contacts);
+		// 	if(socketList.hasOwnProperty(userData.username)){
+		// 		socketList[userData.username].emit( 'contact_removed', contactName);
+		// 	}
+		// })
+
+		// Update User to mongodb
+		// UsersCollection.updateOne({userData: userData.username}, { contacts: contacts }).then((res) => {
+		UsersCollection.updateOne({userData: userData.username}, { fullName: "GT2_TEST_IPC 1" }).then((res) => {
+			console.log(userData.fullName);
+			const to = userData.username;
+			if(socketList.hasOwnProperty(to)){
+				socketList[userData.username].emit( 'contact_removed', contactName);
+			}
+		})
+
+
+		// UsersCollection.updateOne({ userData: userData.username }, {
+		// 	$pullAll: {
+		// 		contacts: [{contactName}],
+		// 	},function(){
+		// 		console.log("success");
+		// 		const to = userInfo.username;
+		// 		if(socketList.hasOwnProperty(to)){
+		// 			socketList[to].emit( 'receive_message', userInfo );
+		// 		}
+		// 	}
+		// });
+		
 	});
 
 });

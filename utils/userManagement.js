@@ -78,7 +78,7 @@ const UserManagement = class {
 
 		// Save message to mongodb
 		const user = new UsersCollection( data );
-		user.save(function(err){
+		user.save(function(){
 			if( exeFunc ) exeFunc( user );
 		})
 	}
@@ -89,7 +89,7 @@ const UserManagement = class {
 		{
 			userData.contacts.push({ contactName: contactName, hasNewMessages: true } );
 
-			userData.save(function(err){
+			userData.save(function(){
 				if( exeFunc ) exeFunc( userData );
 			});
 		}
