@@ -154,7 +154,7 @@ const io = require('socket.io')(server,{
 	}
 });
 
-io.use((socket, next) => {
+io.use( async(socket, next) => {
 
 	try {
 		/** Create two random values:
@@ -164,7 +164,7 @@ io.use((socket, next) => {
 		const sessionID = socket.handshake.auth.sessionID;
 		if (sessionID) {
 			// find existing session
-			const session = sessionStore.findSession(sessionID);
+			const session = await sessionStore.findSession(sessionID);
 			if (session) {
 				socket.sessionID = sessionID;
 				socket.userID = session.userID;
@@ -300,7 +300,7 @@ io.on('connection', socket => {
 		
 	});
 
-	socket.on("disconnect", async () => {
+	socket.on("disconnect", async () => {  
 		const matchingSockets = await io.in(socket.userID).allSockets();
 		const isDisconnected = matchingSockets.size === 0;
 		if (isDisconnected) {
@@ -312,8 +312,33 @@ io.on('connection', socket => {
 				username: socket.username,
 				connected: false,
 			});
+
+			// socketList[c].disconnect();
 		}
 	});
+
+	// socket.on("user_logout", async () => {
+	// 	const matchingSockets = await io.in(socket.userID).allSockets();
+	// 	const isDisconnected = matchingSockets.size === 0;
+	// 	if (isDisconnected) {
+	// 		// notify other users
+	// 		socket.broadcast.emit("user_disconnected", socket.username);
+	// 		// update the connection status of the session
+	// 		sessionStore.saveSession(socket.sessionID, {
+	// 			userID: socket.userID,
+	// 			username: socket.username,
+	// 			connected: false,
+	// 		});
+
+	// 		let connections = sio.sockets.connected;
+	// 		for(let c in connections) {
+	// 			let socketSessionID = connections[c].conn.request.sessionID;
+	// 			if(sessionID === socketSessionID) {
+	// 				connections[c].disconnect();
+	// 			}
+	// 		}
+	// 	}
+	// });
 
 	
 	socket.on('get_message_list', ( users ) => {
@@ -346,41 +371,17 @@ io.on('connection', socket => {
 	
 	socket.on('remove_contact', ( {userData, contactName} ) => {
 
+		serverUtils.removeFromList( userData.contacts, contactName, "contactName");
+		
+		// // Update User to mongodb
 		const contacts = serverUtils.removeFromList( userData.contacts, contactName, "contactName");
-		userData.fullName = "GT2_TEST_IPC 1";
-
-		// // Update message to mongodb
-		// const user = new UsersCollection( userData );
-		// user.save(function(){
-		// 	console.log(userData.contacts);
-		// 	if(socketList.hasOwnProperty(userData.username)){
-		// 		socketList[userData.username].emit( 'contact_removed', contactName);
-		// 	}
-		// })
-
-		// Update User to mongodb
-		// UsersCollection.updateOne({userData: userData.username}, { contacts: contacts }).then((res) => {
-		UsersCollection.updateOne({userData: userData.username}, { fullName: "GT2_TEST_IPC 1" }).then((res) => {
-			console.log(userData.fullName);
+		UsersCollection.updateOne({username: userData.username}, { contacts }).then((res) => {
 			const to = userData.username;
 			if(socketList.hasOwnProperty(to)){
 				socketList[userData.username].emit( 'contact_removed', contactName);
 			}
 		})
 
-
-		// UsersCollection.updateOne({ userData: userData.username }, {
-		// 	$pullAll: {
-		// 		contacts: [{contactName}],
-		// 	},function(){
-		// 		console.log("success");
-		// 		const to = userInfo.username;
-		// 		if(socketList.hasOwnProperty(to)){
-		// 			socketList[to].emit( 'receive_message', userInfo );
-		// 		}
-		// 	}
-		// });
-		
 	});
 
 });
