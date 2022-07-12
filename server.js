@@ -28,8 +28,8 @@ const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
 const PORT = process.env.PORT || 3111;
-const clientURL = 'http://127.0.0.1:8887'; 
-// const clientURL = "https://pwa-dev.psi-connect.org";
+// const clientURL = 'http://127.0.0.1:8887'; 
+const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 let socketList = [];
 
@@ -372,7 +372,7 @@ io.on('connection', socket => {
 	socket.on('remove_contact', ( {userData, contactName} ) => {
 
 		serverUtils.removeFromList( userData.contacts, contactName, "contactName");
-		
+
 		// // Update User to mongodb
 		const contacts = serverUtils.removeFromList( userData.contacts, contactName, "contactName");
 		UsersCollection.updateOne({username: userData.username}, { contacts }).then((res) => {
