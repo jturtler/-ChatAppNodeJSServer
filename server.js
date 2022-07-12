@@ -243,6 +243,8 @@ io.on('connection', socket => {
 	
 	// forward the private message to the right recipient (and to other tabs of the sender)
 	socket.on("private_message", (data) => {
+		console.log("======= message");
+		console.log(data);
 		const message = new MessagesCollection( data );
 		// Save message to mongodb
 		message.save().then(() => {

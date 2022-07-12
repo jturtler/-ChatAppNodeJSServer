@@ -22,6 +22,10 @@ class MessageUtils {
             {
                 const senderUser = serverUtils.findItemFromList( list, sendUsername, "username" );
                 const receiveUser = serverUtils.findItemFromList( list, receiveUsername, "username" );
+                console.log("--- senderUser");
+                console.log(senderUser);
+                console.log("--- receiveUser");
+                console.log(receiveUser);
                 if( receiveUser.wtsa != undefined )
                 {
                     const data = {
@@ -31,14 +35,14 @@ class MessageUtils {
                             "fromPhoneNumber": senderUser.wtsa 
                         } 
                     }
-
+console.log( data );
                     axios.post(WTSA_URL, data )
-                    .then(function (response) {
-                        console.log("-- The message is sent to Whatsapp.");
-                    })
-                    .catch(function (err) {
-                        console.log("-- The message couldn't be sent to Whatsapp." + err.message );
-                    });
+                        .then(function (response) {
+                            console.log("-- The message is sent to Whatsapp.");
+                        })
+                        .catch(function (err) {
+                            console.log("-- The message couldn't be sent to Whatsapp." + err.message );
+                        });
                 }
             }
         })

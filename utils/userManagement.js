@@ -81,7 +81,7 @@ const UserManagement = class {
 			const receiverFullName = ( receiver.name ? receiver.name : receiver.phone );
 			const userData2 = {
 				username: username2,
-				wtsa: sender.phone,
+				wtsa: receiver.phone,
 				fullName: receiverFullName,
 				contacts: [{
 					contactName: username1,
@@ -179,6 +179,7 @@ const UserManagement = class {
 		// Save message to mongodb
 		const user = new UsersCollection( userData );
 		user.save(function(a, newUser, c){
+			console.log(newUser);
 			if( exeFunc ) exeFunc( newUser );
 		})
 	}
