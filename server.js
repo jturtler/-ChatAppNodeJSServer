@@ -98,8 +98,8 @@ const server = express()
 	const username1 = req.body.username1;
 	const username2 = req.body.username2;
 
-	const userManagement = new UserManagement( username1, username2 );
-	userManagement.createIfNotExist( function(){
+	const userManagement = new UserManagement();
+	userManagement.createIfNotExist(  username1, username2, function(){
 		res.send({msg: `The user is created.`, "status": "SUCCESS"});
 	})
 })
@@ -126,14 +126,22 @@ const server = express()
 .post('/messages', function(req, res){
 	const data = req.body;
 
-	const userManagement = new UserManagement( data.sender, data.receiver );
-	userManagement.createIfNotExist( function(){
+	const userManagement = new UserManagement();
+	userManagement.createWtsaUserIfNotExist( data.sender, data.receiver, function(){
 		// Save message to mongodb
-		const message = new MessagesCollection( data );
+		const messageData = {
+			"datetime": data.datetime,
+			"msg": data.msg,
+			"sender": data.sender.phone,
+			"receiver": data.receiver.phone,
+			"msgtype": data.msgtype
+		}
+		
+		const message = new MessagesCollection( messageData );
 		message.save().then(() => {
-			const to = data.receiver;
+			const to = messageData.receiver;
 			if(socketList.hasOwnProperty(to)){
-				socketList[to].emit( 'sendMsg', data );
+				socketList[to].emit( 'sendMsg', messageData );
 			}
 			res.send({msg:"Data is sent.", "status": "SUCCESS"});
 		})
@@ -354,8 +362,8 @@ io.on('connection', socket => {
 
 	
 	socket.on('create_new_user', ( data ) => {
-		const userManagement = new UserManagement( data.username1, data.username2 );
-		userManagement.createIfNotExist( function(userList){
+		const userManagement = new UserManagement();
+		userManagement.createIfNotExist( data.username1, data.username2, function(userList){
 			if(socketList.hasOwnProperty(data.username2)){
 				const found = serverUtils.findItemFromList( userList, data.username1, "username" );
 				socketList[data.username2].emit('new_user_created', found);

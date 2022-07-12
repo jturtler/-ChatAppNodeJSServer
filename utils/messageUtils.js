@@ -8,7 +8,6 @@ const UsersCollection = require("../models/users");
 
 class MessageUtils {
     constructor( ) {
-       
 	}
 
 	sendWtsaMessage( sendUsername, receiveUsername, message ) {

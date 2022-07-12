@@ -5,33 +5,30 @@ const {ServerUtils} = require("./utils");
 const serverUtils = new ServerUtils();
 
 const UserManagement = class {
-	constructor( username1, username2 ) {
-		this.username1 = username1;
-		this.username2 = username2;
-		this.status = [];
+	constructor() {
 	}
 
-	createIfNotExist( exeFunc ) {
+	createIfNotExist( username1, username2, exeFunc ) {
 		UsersCollection.find().or([
-			{ username: this.username1 },
-			{ username: this.username2 }
+			{ username: username1 },
+			{ username: username2 }
 		]).then(( list ) => {
 			var me = this;
 			if( list.length == 1 )
 			{
-				if( list[0].username == this.username1 )
+				if( list[0].username == username1 )
 				{
-					this.create( me.username2, me.username1, function(newUserData2){
-						me.updateContact( list[0], me.username2, function( newUserData1 ) {
+					this.createUserByUsername(username2, username1, function(newUserData2){
+						me.updateContact( list[0],username2, function( newUserData1 ) {
 							exeFunc( [newUserData1, newUserData2] );
 						} );
 					} );
 					
 				}
-				else if( list[0].username == this.username2 )
+				else if( list[0].username == username2 )
 				{
-					this.create( me.username1, me.username2, function( newUserData1 ){
-						me.updateContact( list[0], me.username1, function( newUserData2 ) {
+					this.createUserByUsername(username1, username2, function( newUserData1 ){
+						me.updateContact( list[0], username1, function( newUserData2 ) {
 							exeFunc( [newUserData1, newUserData2] );
 						} );
 					} );
@@ -39,8 +36,8 @@ const UserManagement = class {
 			}
 			else if( list.length == 0 )
 			{
-				this.create(me.username1, me.username2, function( userData1 ){
-					me.create(me.username2, me.username1, function( userData2 ){
+				this.createUserByUsername(me.username1, username2, function( userData1 ){
+					me.createUserByUsername(me.username2, username1, function( userData2 ){
 						exeFunc([userData1, userData2]); // Should put the userData for username1 and username2
 					});
 				});
@@ -49,18 +46,18 @@ const UserManagement = class {
 			else if( list.length == 2 )
 			{
 				// Check ContactList and update
-				if( list[0].username == this.username1 )
+				if( list[0].username == username1 )
 				{
-					me.updateContact( list[0], me.username2, function( userData1 ) {
-						me.updateContact( list[1], me.username1, function( userData2 ){
+					me.updateContact( list[0], username2, function( userData1 ) {
+						me.updateContact( list[1], username1, function( userData2 ){
 							exeFunc([userData1, userData2]);
 						});
 					});
 				}
 				else
 				{
-					me.updateContact( list[0], me.username1, function( userData1 ) {
-						me.updateContact( list[1], me.username2, function(userData2){
+					me.updateContact( list[0], username1, function( userData1 ) {
+						me.updateContact( list[1], username2, function(userData2){
 							exeFunc([userData1, userData2]);
 						} )
 					})
@@ -69,7 +66,100 @@ const UserManagement = class {
 		});
 	};
 
-	create( username, contact, exeFunc ) {
+	
+	createWtsaUserIfNotExist( sender, receiver, exeFunc ) {
+		const username1 = sender.phone;
+		const username2 = receiver.phone;
+		UsersCollection.find().or([
+			{ username: username1 },
+			{ username: username2 }
+		]).then(( list ) => {
+
+			var me = this;
+
+			// For Receiver data
+			const receiverFullName = ( receiver.name ? receiver.name : receiver.phone );
+			const userData2 = {
+				username: username2,
+				wtsa: sender.phone,
+				fullName: receiverFullName,
+				contacts: [{
+					contactName: username1,
+					hasNewMessages: true
+				}]
+			}
+
+			// For Sender data
+			let senderFullName = sender.phone;
+			if( sender.clientDetail.firstName != undefined || sender.clientDetail.lastName != lastName )
+			{
+				senderFullName = sender.clientDetail.firstName + " " + sender.clientDetail.lastName;
+			}
+
+			const userData1 = {
+				username: username1,
+				wtsa: sender.phone,
+				fullName: senderFullName,
+				contacts: [{
+					contactName: username2,
+					hasNewMessages: true
+				}]
+			}
+
+			// Create/Update relationships
+			if( list.length == 1 )
+			{
+				if( list[0].username == username1 )
+				{
+					me.createUser(userData2, function(newUserData2){
+						me.updateContact( list[0], username2, function( newUserData1 ) {
+							exeFunc( [newUserData1, newUserData2] );
+						} );
+					} );
+					
+				}
+				else if( list[0].username == username2 )
+				{
+					me.createUser(userData1, function( newUserData1 ){
+						me.updateContact( list[0], username1, function( newUserData2 ) {
+							exeFunc( [newUserData1, newUserData2] );
+						} );
+					} );
+				}
+			}
+			else if( list.length == 0 )
+			{
+				me.createUser(userData1, function( newUserData1 ){
+					me.createUser(userData2, function( newUserData2 ){
+						exeFunc([newUserData1, newUserData2]); // Should put the userData for username1 and username2
+					});
+				});
+				
+			}
+			else if( list.length == 2 )
+			{
+				// Check ContactList and update
+				if( list[0].username == username1 )
+				{
+					me.updateContact( list[0], username2, function( userData1 ) {
+						me.updateContact( list[1], username1, function( userData2 ){
+							exeFunc([userData1, userData2]);
+						});
+					});
+				}
+				else
+				{
+					me.updateContact( list[0], username1, function( userData1 ) {
+						me.updateContact( list[1], username2, function(userData2){
+							exeFunc([userData1, userData2]);
+						} )
+					})
+				}
+			}
+		});
+	};
+
+	createUserByUsername( username, contact, exeFunc ) {
 		const data = {
 			username: username,
 			fullName: username,
@@ -77,9 +167,19 @@ const UserManagement = class {
 		}
 
 		// Save message to mongodb
-		const user = new UsersCollection( data );
-		user.save(function(){
-			if( exeFunc ) exeFunc( user );
+		createUser( data, exeFunc );
+		// const user = new UsersCollection( data );
+		// user.save(function(){
+		// 	if( exeFunc ) exeFunc( user );
+		// })
+	}
+
+	
+	createUser( userData, exeFunc ) {
+		// Save message to mongodb
+		const user = new UsersCollection( userData );
+		user.save(function(a, newUser, c){
+			if( exeFunc ) exeFunc( newUser );
 		})
 	}
 
