@@ -11,8 +11,9 @@ class MessageUtils {
 	}
 
 	sendWtsaMessage( sendUsername, receiveUsername, message ) {
+        console.log("--- Whatsapp sending data ");
         let me = this;
-
+        
         UsersCollection.find().or([
             { username: sendUsername },
             { username: receiveUsername }
@@ -22,10 +23,7 @@ class MessageUtils {
             {
                 const senderUser = serverUtils.findItemFromList( list, sendUsername, "username" );
                 const receiveUser = serverUtils.findItemFromList( list, receiveUsername, "username" );
-                console.log("--- senderUser");
-                console.log(senderUser);
-                console.log("--- receiveUser");
-                console.log(receiveUser);
+               
                 if( receiveUser.wtsa != undefined )
                 {
                     const data = {
@@ -35,7 +33,7 @@ class MessageUtils {
                             "fromPhoneNumber": senderUser.wtsa 
                         } 
                     }
-console.log( data );
+                console.log( data );
                     axios.post(WTSA_URL, data )
                         .then(function (response) {
                             console.log("-- The message is sent to Whatsapp.");

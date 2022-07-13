@@ -243,8 +243,7 @@ io.on('connection', socket => {
 	
 	// forward the private message to the right recipient (and to other tabs of the sender)
 	socket.on("private_message", (data) => {
-		console.log("======= message");
-		console.log(data);
+		
 		const message = new MessagesCollection( data );
 		// Save message to mongodb
 		message.save().then(() => {
@@ -285,7 +284,7 @@ io.on('connection', socket => {
 		 * 
 		 * TODO: for param "userData" ==> Just need to use "username" is good enough.
 		*/
-		UsersCollection.find({username:userData.username}).then(( list ) => {
+		UsersCollection.find({username: userData.username}).then(( list ) => {
 			if( list.length > 0 )
 			{
 				var userInfo = list[0];

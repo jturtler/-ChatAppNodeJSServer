@@ -85,7 +85,7 @@ const UserManagement = class {
 				fullName: receiverFullName,
 				contacts: [{
 					contactName: username1,
-					hasNewMessages: true
+					hasNewMessages: false
 				}]
 			}
 
@@ -102,7 +102,7 @@ const UserManagement = class {
 				fullName: senderFullName,
 				contacts: [{
 					contactName: username2,
-					hasNewMessages: true
+					hasNewMessages: false
 				}]
 			}
 
@@ -167,11 +167,7 @@ const UserManagement = class {
 		}
 
 		// Save message to mongodb
-		createUser( data, exeFunc );
-		// const user = new UsersCollection( data );
-		// user.save(function(){
-		// 	if( exeFunc ) exeFunc( user );
-		// })
+		this.createUser( data, exeFunc );
 	}
 
 	
@@ -188,7 +184,7 @@ const UserManagement = class {
 		const found = serverUtils.findItemFromList( userData.contacts, contactName, "contactName");
 		if( !found )
 		{
-			userData.contacts.push({ contactName: contactName, hasNewMessages: true } );
+			userData.contacts.push({ contactName: contactName, hasNewMessages: false } );
 
 			userData.save(function(){
 				if( exeFunc ) exeFunc( userData );
