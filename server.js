@@ -28,8 +28,8 @@ const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
 const PORT = process.env.PORT || 3111;
-// const clientURL = 'http://127.0.0.1:8887'; 
-const clientURL = "https://pwa-dev.psi-connect.org";
+const clientURL = 'http://127.0.0.1:8887'; 
+// const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 let socketList = [];
 
@@ -41,7 +41,7 @@ let socketList = [];
 const mongoDB = "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/chatApp?retryWrites=true&w=majority";
 
 mongoose.connect(mongoDB).then(() => {
-	console.log("------------- mongo connected ");
+	console.log("============================= mongo connected ");
 }).catch(err => console.log(err))
 
 

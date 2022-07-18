@@ -68,8 +68,8 @@ const UserManagement = class {
 
 	
 	createWtsaUserIfNotExist( sender, receiver, exeFunc ) {
-		const username1 = sender.phone;
-		const username2 = receiver.phone;
+		const username1 = sender.id;
+		const username2 = receiver.id;
 		UsersCollection.find().or([
 			{ username: username1 },
 			{ username: username2 }
@@ -90,7 +90,7 @@ const UserManagement = class {
 			}
 
 			// For Sender data
-			let senderFullName = sender.phone;
+			let senderFullName = sender.id;
 			if( sender.clientDetail.firstName != undefined || sender.clientDetail.lastName != lastName )
 			{
 				senderFullName = sender.clientDetail.firstName + " " + sender.clientDetail.lastName;
