@@ -140,9 +140,12 @@ const server = express()
 			"msg": msg,
 			"sender": data.sender.id,
 			"receiver": data.receiver.id,
-			"msgtype": data.msgtype,
+		 	"msgtype": data.msgtype,
 			filetype
 		}
+
+		console.log(" ============================= messageData : ");
+		console.log(messageData);
 		
 		const message = new MessagesCollection( messageData );
 		message.save().then(() => {
