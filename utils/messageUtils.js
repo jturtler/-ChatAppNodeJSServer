@@ -33,10 +33,11 @@ class MessageUtils {
                             "fromPhoneNumber": senderUser.wtsa 
                         } 
                     }
-                console.log( data );
-                    axios.post(WTSA_URL, data )
+                    
+                    axios.post( WTSA_URL, data )
                         .then(function (response) {
                             console.log("-- The message is sent to Whatsapp.");
+                            console.log(response);
                         })
                         .catch(function (err) {
                             console.log("-- The message couldn't be sent to Whatsapp." + err.message );
@@ -44,11 +45,6 @@ class MessageUtils {
                 }
             }
         })
-
-
-      
-
-        
 
     }
 }

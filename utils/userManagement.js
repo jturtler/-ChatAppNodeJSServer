@@ -70,6 +70,7 @@ const UserManagement = class {
 	createWtsaUserIfNotExist( sender, receiver, exeFunc ) {
 		const username1 = sender.id;
 		const username2 = receiver.id;
+
 		UsersCollection.find().or([
 			{ username: username1 },
 			{ username: username2 }
@@ -105,6 +106,12 @@ const UserManagement = class {
 					hasNewMessages: false
 				}]
 			}
+
+			
+		console.log("==== sender");
+		console.log(userData1);
+		console.log("==== receiver");
+		console.log(userData2);
 
 			// Create/Update relationships
 			if( list.length == 1 )

@@ -129,12 +129,19 @@ const server = express()
 	const userManagement = new UserManagement();
 	userManagement.createWtsaUserIfNotExist( data.sender, data.receiver, function(){
 		// Save message to mongodb
+		let msg = data.msg;
+		let filetype;
+		if( data.incomingPayload.MediaUrl0 != undefined ) {
+			msg = data.incomingPayload.MediaUrl0;
+			filetype = "IMAGE";
+		}
 		const messageData = {
 			"datetime": data.datetime,
-			"msg": data.msg,
-			"sender": data.sender.phone,
-			"receiver": data.receiver.phone,
-			"msgtype": data.msgtype
+			"msg": msg,
+			"sender": data.sender.id,
+			"receiver": data.receiver.id,
+			"msgtype": data.msgtype,
+			filetype
 		}
 		
 		const message = new MessagesCollection( messageData );
@@ -321,35 +328,9 @@ io.on('connection', socket => {
 				username: socket.username,
 				connected: false,
 			});
-
-			// socketList[c].disconnect();
 		}
 	});
 
-	// socket.on("user_logout", async () => {
-	// 	const matchingSockets = await io.in(socket.userID).allSockets();
-	// 	const isDisconnected = matchingSockets.size === 0;
-	// 	if (isDisconnected) {
-	// 		// notify other users
-	// 		socket.broadcast.emit("user_disconnected", socket.username);
-	// 		// update the connection status of the session
-	// 		sessionStore.saveSession(socket.sessionID, {
-	// 			userID: socket.userID,
-	// 			username: socket.username,
-	// 			connected: false,
-	// 		});
-
-	// 		let connections = sio.sockets.connected;
-	// 		for(let c in connections) {
-	// 			let socketSessionID = connections[c].conn.request.sessionID;
-	// 			if(sessionID === socketSessionID) {
-	// 				connections[c].disconnect();
-	// 			}
-	// 		}
-	// 	}
-	// });
-
-	
 	socket.on('get_message_list', ( users ) => {
 		MessagesCollection.find().or([
 			{ sender: users.username1, receiver: users.username2 },
