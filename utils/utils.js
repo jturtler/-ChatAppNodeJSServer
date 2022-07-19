@@ -19,7 +19,7 @@ class ServerUtils extends Utils {
 			{
 				propertyName = "id";
 			}
-
+			
 			for( let i = 0; i < list.length; i++ )
 			{
 				let listItem = list[i];

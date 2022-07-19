@@ -69,9 +69,41 @@ const server = express()
 				UsersCollection.find(
 					{ username: { $in: contactNameList } }
 				)
-				.sort({ fullName: 1 })
+				// .sort({ fullName: 1 })
 				.then(( contactList ) => {
-					res.send({ curUser: curUser, contacts: contactList });
+					MessagesCollection.find().or([
+						{ sender: username },
+						{ receiver: username }
+					])
+					.sort({ datetime: -1 })
+					.then(( messageList ) => {
+						
+						let contactUserList = [];
+						for( var i=0; i<messageList.length; i++ )
+						{ 
+							const contactName = ( messageList[i].sender !== username ) ? messageList[i].sender : messageList[i].receiver;
+							const found = serverUtils.findItemFromList( contactUserList, contactName, "username" );
+							if(!found) 
+							{
+								contactUserList.push( serverUtils.findItemFromList(contactList, contactName, "username") );
+							}
+						}
+
+						// Add the contactData for contacts without any messages
+						for( var i=0; i<contactList.length; i++ )
+						{ 
+							const contactData = contactList[i];
+							const found = serverUtils.findItemFromList( contactUserList, contactData.username, "username" );
+							if(!found) 
+							{
+								contactUserList.push( contactData );
+							}
+						}
+						
+						res.send({ curUser: curUser, contacts: contactUserList });
+					})
+
+					
 				})
 			}
 			else
