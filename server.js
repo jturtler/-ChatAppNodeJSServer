@@ -28,7 +28,7 @@ const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
 const PORT = process.env.PORT || 3111;
-// const clientURL = 'http://127.0.0.1:8887'; 
+const clientURL_loc = 'http://127.0.0.1:8887'; 
 const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 let socketList = [];
@@ -166,7 +166,7 @@ const server = express()
 
 const io = require('socket.io')(server,{
   cors: {
-		origin: clientURL,
+		origin: [ clientURL, clientURL_loc ],
 		methods: ["GET", "POST"],
 		credentials: true
 	}
