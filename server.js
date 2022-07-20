@@ -198,7 +198,8 @@ const server = express()
 
 const io = require('socket.io')(server,{
   cors: {
-		origin: [ clientURL, clientURL_loc ],
+		origin: clientURL,
+		// origin: [ clientURL, clientURL_loc ],
 		methods: ["GET", "POST"],
 		credentials: true
 	}
