@@ -372,9 +372,10 @@ io.on('connection', socket => {
 				else
 				{
 					// Update User to mongodb
-					UsersCollection.updateOne({username: username}, { contacts: contactList }).then((res) => {
-						if(socketList.hasOwnProperty(username)){
-							socketList[username].emit( 'receive_message', {userData: userInfo} );
+					UsersCollection.updateOne({username: userInfo.username}, { contacts: contactList }).then((res) => {
+						const to = userInfo.username;
+						if(socketList.hasOwnProperty(to)){
+							socketList[to].emit( 'receive_message', {userData: userInfo} );
 						}
 					})
 				}
