@@ -238,7 +238,6 @@ const io = require( 'socket.io' )( server, {
 
 io.path( _chatServicePath );
 
-
 io.use( async(socket, next) => {
 
 	try {
@@ -275,9 +274,7 @@ io.use( async(socket, next) => {
 	}
 
 	next();
-})
-
-
+});
 
 // =======================================================================================================
 // Create connection
