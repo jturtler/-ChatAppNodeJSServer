@@ -159,41 +159,50 @@ const server = express()
 	
 	console.log(" ============================= Send data from POST request : ");
 
-	const data = req.body;
-
-	const userManagement = new UserManagement();
-	userManagement.createWtsaUserIfNotExist( data.sender, data.receiver, function(userList){
-		// Save message to mongodb
-		let msg = data.msg;
-		let filetype;
-		if( data.incomingPayload.MediaUrl0 != undefined ) {
-			msg = data.incomingPayload.MediaUrl0;
-			filetype = "IMAGE";
-		}
-		const messageData = {
-			"datetime": data.datetime,
-			"msg": msg,
-			"sender": data.sender.id,
-			"receiver": data.receiver.id,
-		 	"msgtype": data.msgtype,
-			filetype
-		}
-
-		console.log(" === messageData : ");
-		console.log(messageData);
+	try
+	{
 		
-		const message = new MessagesCollection( messageData );
-		message.save().then(() => {
-			const to = messageData.receiver;
-			if(socketList.hasOwnProperty(to)){
-				socketList[to].emit( 'sendMsg', messageData );
-			}
-			res.send({msg:"Data is sent.", "status": "SUCCESS"});
+		const data = req.body;
 
+		const userManagement = new UserManagement();
+		userManagement.createWtsaUserIfNotExist( data.sender, data.receiver, function(userList){
+			// Save message to mongodb
+			let msg = data.msg;
+			let filetype;
+			if( data.incomingPayload.MediaUrl0 != undefined ) {
+				msg = data.incomingPayload.MediaUrl0;
+				filetype = "IMAGE";
+			}
+			const messageData = {
+				"datetime": data.datetime,
+				"msg": msg,
+				"sender": data.sender.id,
+				"receiver": data.receiver.id,
+				"msgtype": data.msgtype,
+				filetype
+			}
+
+			console.log(" === messageData : ");
+			console.log(messageData);
 			
-			console.log(" === Data is sent successfully.");
+			const message = new MessagesCollection( messageData );
+			message.save().then(() => {
+				const to = messageData.receiver;
+				if(socketList.hasOwnProperty(to)){
+					socketList[to].emit( 'sendMsg', messageData );
+				}
+				res.send({msg:"Data is sent.", "status": "SUCCESS"});
+
+				
+				console.log(" === Data is sent successfully.");
+			})
 		})
-	})
+	}
+	catch( ex )
+	{
+		console.log(" === ERROR when data is sent. ");
+		console.log( ex );
+	}
 })
 .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
