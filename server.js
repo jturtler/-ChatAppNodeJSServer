@@ -28,8 +28,8 @@ const UsersCollection = require("./models/users");
 const UserManagement = require('./utils/userManagement');
 
 const PORT = process.env.PORT || 3111;
-const clientURL_loc = 'http://127.0.0.1:8887'; 
-const clientURL = "https://pwa-dev.psi-connect.org";
+const clientURL = 'http://127.0.0.1:8887'; 
+// const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 let socketList = [];
 
@@ -156,10 +156,13 @@ const server = express()
 	}
 })
 .post('/messages', function(req, res){
+	
+	console.log(" ============================= Send data from POST request : ");
+
 	const data = req.body;
 
 	const userManagement = new UserManagement();
-	userManagement.createWtsaUserIfNotExist( data.sender, data.receiver, function(){
+	userManagement.createWtsaUserIfNotExist( data.sender, data.receiver, function(userList){
 		// Save message to mongodb
 		let msg = data.msg;
 		let filetype;
@@ -176,7 +179,7 @@ const server = express()
 			filetype
 		}
 
-		console.log(" ============================= messageData : ");
+		console.log(" === messageData : ");
 		console.log(messageData);
 		
 		const message = new MessagesCollection( messageData );
@@ -186,6 +189,9 @@ const server = express()
 				socketList[to].emit( 'sendMsg', messageData );
 			}
 			res.send({msg:"Data is sent.", "status": "SUCCESS"});
+
+			
+			console.log(" === Data is sent successfully.");
 		})
 	})
 })
@@ -340,13 +346,30 @@ io.on('connection', socket => {
 					}
 				}
 
-				// Update User to mongodb
-				UsersCollection.updateOne({username: userInfo.username}, { contacts: userInfo.contacts }).then((res) => {
-					const to = userInfo.username;
-					if(socketList.hasOwnProperty(to)){
-						socketList[to].emit( 'receive_message', userInfo );
-					}
-				})
+				// Check if there is any new contact created
+				if( hasNewMessages && userData.contacts.length < userInfo.contacts.length )
+				{
+					let contactNameList = userInfo.contacts.map(contact => contact.contactName);
+					UsersCollection.find({username: { $in: contactNameList }}).then(( contactList ) => {
+						// Update User to mongodb
+						UsersCollection.updateOne({username: userInfo.username}, { contacts: userInfo.contacts }).then((res) => {
+							const to = userInfo.username;
+							if(socketList.hasOwnProperty(to)){
+								socketList[to].emit( 'receive_message', {userData: userInfo, contacts: contactList} );
+							}
+						})
+					})
+				}
+				else
+				{
+					// Update User to mongodb
+					UsersCollection.updateOne({username: username}, { contacts: contactList }).then((res) => {
+						if(socketList.hasOwnProperty(username)){
+							socketList[username].emit( 'receive_message', {userData: userInfo} );
+						}
+					})
+				}
+				
 			}
 		});
 		
