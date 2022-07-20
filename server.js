@@ -33,6 +33,8 @@ const clientURL = "https://pwa-dev.psi-connect.org";
 const INDEX = '/index.html';
 let socketList = [];
 
+var _chatServicePath = '/ws/chat/';
+
 // =======================================================================================================
 // Mongo Connection
 // ====================
@@ -135,6 +137,20 @@ const server = express()
 		res.send({msg: `The user is created.`, "status": "SUCCESS"});
 	})
 })
+.post("/setChatServicePath", (req, res) => {
+
+	if ( req.body.chatServicePath ) _chatServicePath = req.body.chatServicePath;
+
+	// restartIO();
+
+	res.send( { msg: "Service _chatServicePath is " + _chatServicePath + ', and IO restared.', status: "SUCCESS" } ) ;
+})
+.get("/restartIO", (req, res) => {
+	
+	// restartIO();
+
+	res.send( { msg: "io restarted", status: "SUCCESS" } ) ;
+})
 .get("/messages", (req, res) => {
 	const username1 = req.query.username1;
 	const username2 = req.query.username2;
@@ -211,7 +227,7 @@ const server = express()
 // INIT Socket IO
 // ====================
 
-const io = require('socket.io')(server,{
+const io = require( 'socket.io' )( server, {
   cors: {
 		origin: clientURL,
 		// origin: [ clientURL, clientURL_loc ],
@@ -219,6 +235,9 @@ const io = require('socket.io')(server,{
 		credentials: true
 	}
 });
+
+io.path( _chatServicePath );
+
 
 io.use( async(socket, next) => {
 
