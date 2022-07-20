@@ -372,7 +372,7 @@ io.on('connection', socket => {
 				else
 				{
 					// Update User to mongodb
-					UsersCollection.updateOne({username: userInfo.username}, { contacts: contactList }).then((res) => {
+					UsersCollection.updateOne({username: userInfo.username}, { contacts: userInfo.contacts }).then((res) => {
 						const to = userInfo.username;
 						if(socketList.hasOwnProperty(to)){
 							socketList[to].emit( 'receive_message', {userData: userInfo} );
