@@ -24,7 +24,7 @@ class ServerUtils extends Utils {
 			{
 				let listItem = list[i];
 
-				if ( listItem[propertyName] == value )
+				if ( listItem != undefined && listItem[propertyName] == value )
 				{
 					item = listItem;
 					break;
